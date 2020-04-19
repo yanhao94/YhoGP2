@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+  <TextView
+      android:text="登录"
+      android:gravity="center"
+      android:textSize="30sp"
+      android:textColor="#00ffcc"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="50dp"
+      android:layout_marginTop="20dp"/>
+  <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColorHint="#c5c5c5"
+      >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_loginDialog_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:hint="账号"
+        />
+  </com.google.android.material.textfield.TextInputLayout>
+  <com.google.android.material.textfield.TextInputLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColorHint="#c5c5c5"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      app:passwordToggleEnabled="true"
+      >
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_loginDialog_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:hint="密码"
+        android:inputType="textPassword"
+        />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <RadioGroup
+      android:layout_marginTop="10dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+    <RadioButton
+        android:id="@+id/rb_loginShop"
+        android:text="商家"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+      <RadioButton
+          android:id="@+id/rb_loginRider"
+          android:text="骑手"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"/>
+  </RadioGroup>
+
+
+  <LinearLayout
+      android:layout_marginTop="30dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+    <Button
+        android:id="@+id/btn_loginDialog_login"
+        android:text="登录"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btn_loginDialog_register"
+        android:text="注册"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"/>
+
+  </LinearLayout>
+
+
+</LinearLayout>
