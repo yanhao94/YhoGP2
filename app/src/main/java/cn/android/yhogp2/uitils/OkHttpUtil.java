@@ -1,23 +1,25 @@
 package cn.android.yhogp2.uitils;
 
+import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class OkHttpUtil {
-    public final static String ORIGINAL_URL = "http://192.168.0.104:9090/AndroidService";
+    public final static String ORIGINAL_URL = "http://192.168.0.108:9090/AndroidService";
     public final static String LOGIN_URL = ORIGINAL_URL + "/LoginServlet";
     public final static String REGISTER_URL = ORIGINAL_URL + "/RegisterServlet";
     public final static String REQUEST_URL = ORIGINAL_URL + "/RequestServlet";
 
-    public  static String CLIENT_TYPE = "";
+    public static String CLIENT_TYPE = "";
 
 
     public final static int ORDER_ACCOUNT_CANCEL = 0;
     public final static int ORDER_CHANGE_NAME = 1;
     public final static int ORDER_CHANGE_PASSWORD = 2;
     public final static int ORDER_REQUEST_SHOP_LIST = 3;
+    public final static int ORDER_REQUEST_SHOP_GOODS = 4;
 
     public static final int REQUEST_SUCCESS = 1;
     public static final int REQUEST_FAIL_NET = 2;
@@ -37,13 +39,14 @@ public class OkHttpUtil {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void registerWithOkHttp(String account, String password, String name, okhttp3.Callback callback) {
+    public static void registerWithOkHttp(String account, String password, String name, String shopJson, okhttp3.Callback callback) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("registerAccount", account)
                 .add("registerPassword", password)
                 .add("registerName", name)
                 .add("registerType", CLIENT_TYPE)
+                .add("shopJson", shopJson)
                 .build();
         Request request = new Request.Builder()
                 .url(REGISTER_URL)
@@ -103,6 +106,19 @@ public class OkHttpUtil {
                 .add("cityCode", cityCode)
                 .add("longtitude", longtitude)
                 .add("latitude", latitude)
+                .build();
+        Request request = new Request.Builder()
+                .url(REQUEST_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void requestShopGoodsList(int shopId, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("order", String.valueOf(ORDER_REQUEST_SHOP_GOODS))
+                .add("shopId", String.valueOf(shopId))
                 .build();
         Request request = new Request.Builder()
                 .url(REQUEST_URL)

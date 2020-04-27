@@ -25,7 +25,7 @@
             android:id="@+id/tiet_registerName"
             android:singleLine="true"
             android:maxLength="10"
-            android:hint="昵称"
+            android:hint="店名/骑手昵称"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -97,6 +97,51 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
     </RadioGroup>
+    <TextView
+        android:text="注册商家时需在店内注册，并填写下内容且打开定位获取商家位置"
+        android:textColor="#ff8765"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"/>
+    <com.google.android.material.textfield.TextInputLayout
+    android:textColorHint="#c5c5c5"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tiet_registerAddr"
+        android:singleLine="true"
+        android:hint="商家地址"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:textColorHint="#c5c5c5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_registerDeliveryDistance"
+            android:singleLine="true"
+            android:hint="配送距离"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/registerLocation"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            />
+        <TextView
+            android:id="@+id/registerGetLocation"
+            android:text="获取当前位置"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_registerSubmit"
@@ -104,5 +149,5 @@
         android:layout_height="wrap_content"
         android:text="提交"
         android:layout_marginTop="20dp"
-        android:textSize="30sp"/>
+        android:textSize="20sp"/>
 </LinearLayout>

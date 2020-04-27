@@ -4,14 +4,15 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
 public class TextUtilTools {
-    public static boolean isNotEmpty(String text) {
-        if (TextUtils.isEmpty(text))
+    public static boolean isNotEmpty(TextInputEditText textInputEditText) {
+        if (TextUtils.isEmpty(textInputEditText.getText()))
             return false;
         return true;
     }
@@ -26,8 +27,8 @@ public class TextUtilTools {
         Toast.makeText(context, content, duration == 1 ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
     }
 
-    public static String getKm(double distance) {
-        BigDecimal km = new BigDecimal(distance);
-        return String.valueOf(km.setScale(1, BigDecimal.ROUND_UP))+"km";
+    public static String getAPoint(double vaule) {
+        BigDecimal km = new BigDecimal(vaule);
+        return String.valueOf(km.setScale(1, BigDecimal.ROUND_UP));
     }
 }
