@@ -1,15 +1,24 @@
 package cn.android.yhogp2.activity.shop;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
+
+import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -17,7 +26,14 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.android.yhogp2.R;
+import cn.android.yhogp2.application.MainApplication;
 import cn.android.yhogp2.javabean.Goods;
+import cn.android.yhogp2.uitils.OkHttpUtil;
+import cn.android.yhogp2.uitils.RequestHandler;
+import cn.android.yhogp2.uitils.TextUtilTools;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class GoodsSettingActivity extends AppCompatActivity {
     @BindView(R.id.tiet_settingName)
@@ -68,8 +84,16 @@ public class GoodsSettingActivity extends AppCompatActivity {
             R.id.cb_Setting8, R.id.cb_Setting7, R.id.cb_Setting6, R.id.cb_Setting5,
             R.id.cb_Setting4, R.id.cb_Setting3, R.id.cb_Setting2, R.id.cb_Setting1})
     List<View> viewsGroup;
+    @BindViews({R.id.cb_Setting1, R.id.cb_Setting2, R.id.cb_Setting3, R.id.cb_Setting4,
+            R.id.cb_Setting5, R.id.cb_Setting6, R.id.cb_Setting7, R.id.cb_Setting8,
+            R.id.cb_Setting9, R.id.cb_Setting10, R.id.cb_Setting11, R.id.cb_Setting12})
+    List<CheckBox> checkGroup;
 
     private Goods mGoods;
+    private int type;
+    private Handler handler;
+    private final int TYPE_ADD = 0;
+    private final int TYPE_CHANGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +105,36 @@ public class GoodsSettingActivity extends AppCompatActivity {
 
     private void init() {
         mGoods = (Goods) getIntent().getSerializableExtra("goods");
+        if (mGoods != null) {
+            this.type = TYPE_CHANGE;
+            initChangeContent();
+        } else {
+            this.type = TYPE_ADD;
+            mGoods = new Goods(MainApplication.loginShop.getShopId());
+        }
+        initHandler();
+    }
+
+    private void initHandler() {
+        handler = new RequestHandler() {
+            @Override
+            public void doRequestSuccess(Message msg) {
+                TextUtilTools.myToast(getApplicationContext(), "请求成功", 1);
+                Message msg1 = ShopHomeActivity.mHandler.obtainMessage();
+                msg1.obj = "have change ";
+                msg1.what = OkHttpUtil.REQUEST_SUCCESS;
+                ShopHomeActivity.mHandler.sendMessage(msg1);
+                finish();
+            }
+
+            @Override
+            public void setTYPE() {
+                REQUEST_TYPE = REQUSET;
+            }
+        }.getRequestHandler(this);
+    }
+
+    private void initChangeContent() {
         tietSettingName.setText(mGoods.getName());
         tietSettingIntroduction.setText(mGoods.getIntroduction());
         tietSettingPrice.setText(String.valueOf(mGoods.getPrice()));
@@ -108,9 +162,64 @@ public class GoodsSettingActivity extends AppCompatActivity {
                 mGoods.setIntroduction(tietSettingIntroduction.getText().toString());
                 mGoods.setName(tietSettingName.getText().toString());
                 mGoods.setPrice(Double.parseDouble(tietSettingPrice.getText().toString()));
-
+                mGoods.setType(getType());
+                if (type == TYPE_CHANGE) {
+                    changeGoods();
+                } else {
+                    addGoods();
+                }
                 break;
         }
+    }
+
+    private int getType() {
+        StringBuilder sb = new StringBuilder(15);
+        for (CheckBox checkBox : checkGroup) {
+            sb.append(checkBox.isChecked() ? 1 : 0);
+        }
+        return Integer.parseInt(sb.toString());
+    }
+
+    private void addGoods() {
+        OkHttpUtil.addGoods(new Gson().toJson(mGoods), new Callback() {
+            Message msg = handler.obtainMessage();
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                msg.what = OkHttpUtil.REQUEST_FAIL_NET;
+                handler.sendMessage(msg);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.body().string().equals("true"))
+                    msg.what = OkHttpUtil.REQUEST_SUCCESS;
+                else
+                    msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                handler.sendMessage(msg);
+            }
+        });
+    }
+
+    private void changeGoods() {
+        OkHttpUtil.changeGoods(new Gson().toJson(mGoods), new Callback() {
+            Message msg = handler.obtainMessage();
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                msg.what = OkHttpUtil.REQUEST_FAIL_NET;
+                handler.sendMessage(msg);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.body().string().equals("true"))
+                    msg.what = OkHttpUtil.REQUEST_SUCCESS;
+                else
+                    msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                handler.sendMessage(msg);
+            }
+        });
     }
 }
 

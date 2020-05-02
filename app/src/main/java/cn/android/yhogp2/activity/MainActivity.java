@@ -1,5 +1,6 @@
 package cn.android.yhogp2.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -15,10 +16,13 @@ import android.widget.RadioButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 
+import java.util.List;
+
 import cn.android.yhogp2.R;
 import cn.android.yhogp2.activity.rIder.RiderHomeActivity;
 import cn.android.yhogp2.activity.shop.ShopHomeActivity;
 import cn.android.yhogp2.application.MainApplication;
+import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.uitils.LaunchDialog;
 import cn.android.yhogp2.uitils.LoginUtil;
 import cn.android.yhogp2.uitils.OkHttpUtil;
@@ -34,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler handler;
     private static SharedPreferences sp_user;
     private static LaunchDialog launchDialog;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LoginUtil.initLoginUtil(this, false);
         initLoginHandler();
     }
+
+
 
     private void initLoginHandler() {
         handler = new RequestHandler() {

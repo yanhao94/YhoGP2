@@ -1,5 +1,6 @@
 package cn.android.yhogp2.activity.shop;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +27,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.android.yhogp2.R;
 import cn.android.yhogp2.application.MainApplication;
+import cn.android.yhogp2.intentservice.RequestNewService;
 import cn.android.yhogp2.javabean.Goods;
+import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.javabean.Shop;
 import cn.android.yhogp2.uitils.OkHttpUtil;
 import cn.android.yhogp2.uitils.RequestHandler;
@@ -62,7 +66,7 @@ public class ShopHomeActivity extends AppCompatActivity {
     private Shop mShop;
     private List<Goods> goodsList;
     public static Handler mHandler;
-
+    public static Handler orderHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,26 @@ public class ShopHomeActivity extends AppCompatActivity {
         initShopInformation();
         getRequestHandler();
         requestGoods();
+        initOrderHandler();
+        this.startService(new Intent(this, RequestNewService.class));
+    }
+
+    private void initOrderHandler() {
+        orderHandler = new Handler() {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case -1:
+                        TextUtilTools.myToast(getApplicationContext(), "网络异常获取不到新订单", 1);
+                        break;
+                    case 1:
+                        List<Order> ordersList = (List<Order>) msg.obj;
+                        TextUtilTools.myToast(getApplicationContext(), "接到" + ordersList.size() + "个新订单啦", 1);
+                        break;
+                }
+            }
+        };
     }
 
     private void initRcvAdapter() {
@@ -89,7 +113,6 @@ public class ShopHomeActivity extends AppCompatActivity {
             @Override
             public void doRequestSuccess(Message msg) {
                 String responseStr = String.valueOf(msg.obj);
-                Log.i("ttaaa", responseStr);
                 if (responseStr.equals("还未添加商品")) {
                 } else {
                     upDataGoodsList(responseStr);
@@ -156,12 +179,15 @@ public class ShopHomeActivity extends AppCompatActivity {
             case R.id.tv_shopGoodsSelectCancel:
                 break;
             case R.id.iv_addGood:
+                startActivity(new Intent(this,GoodsSettingActivity.class));
                 break;
             case R.id.iv_subtractGood:
                 break;
             case R.id.btn_shopNewOrders:
+                startActivity(new Intent(this,NewOrderActivity.class));
                 break;
             case R.id.btn_shopOrdersHistory:
+                startActivity(new Intent(this,HistoryOrderActivity.class));
                 break;
         }
     }

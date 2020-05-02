@@ -11,20 +11,24 @@ public abstract class RequestHandler {
     public int REQUEST_TYPE;
     public final static int REGISTER = 1;
     public final static int LOGIN = 2;
-    public final static int REQUEST_LIST=3;
+    public final static int REQUEST_LIST = 3;
+    public final static int REQUSET = 4;
 
     private String failToastStr;
+
     public Handler getRequestHandler(final Context context) {
-        switch (REQUEST_TYPE)
-        {
+        switch (REQUEST_TYPE) {
             case REGISTER:
-                failToastStr="该账号已被注册";
+                failToastStr = "该账号已被注册";
                 break;
             case LOGIN:
-                failToastStr="账号或密码不对，仔细核对";
+                failToastStr = "账号或密码不对，仔细核对";
                 break;
             case REQUEST_LIST:
-                failToastStr="获取列表失败，稍后再试";
+                failToastStr = "获取列表失败，稍后再试";
+                break;
+            case REQUSET:
+                failToastStr = "请求失败，稍后再试";
                 break;
         }
         return new Handler() {
