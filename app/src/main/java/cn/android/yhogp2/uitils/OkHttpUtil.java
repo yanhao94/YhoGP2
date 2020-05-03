@@ -33,6 +33,10 @@ public class OkHttpUtil {
     public final static int ORDER_SHOP_REQUEST_NEWORDERS_LIST = 6;
     public final static int ORDER_SHOP_REQUEST_HISTORY_ORDERS_LIST = 7;
 
+    public final static int ORDER_RIDER_REQUEST_ORDERS_LIST = 9;
+    public final static int ORDER_RIDER_UPDATE_LOCATION = 10;
+    public final static int ORDER_RIDER_CHANGE_ORDER_STATE = 11;
+
     public static final int REQUEST_SUCCESS = 1;
     public static final int REQUEST_FAIL_NET = 2;
     public static final int REQUEST_FAIL_SERVER = 3;
@@ -51,12 +55,13 @@ public class OkHttpUtil {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void registerWithOkHttp(String account, String password, String name, String shopJson, okhttp3.Callback callback) {
+    public static void registerWithOkHttp(String account, String password, String name, String tel, String shopJson, okhttp3.Callback callback) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("registerAccount", account)
                 .add("registerPassword", password)
                 .add("registerName", name)
+                .add("registerTel", tel)
                 .add("registerType", CLIENT_TYPE)
                 .add("shopJson", shopJson)
                 .build();
@@ -139,7 +144,7 @@ public class OkHttpUtil {
         client.newCall(request).enqueue(callback);
     }
 
-    public static void requestNewOrder(int shopId, Callback callback) {
+    public static void shopRequestNewOrder(int shopId, Callback callback) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("order", String.valueOf(ORDER_SHOP_REQUEST_NEW_ORDERSS))
@@ -165,8 +170,23 @@ public class OkHttpUtil {
                 .build();
         client.newCall(request).enqueue(callback);
     }
+    public static void riderChangeOrderState(int orderId, double state, int riderId,int orderType,Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("order", String.valueOf(ORDER_RIDER_CHANGE_ORDER_STATE))
+                .add("orderId", String.valueOf(orderId))
+                .add("riderId", String.valueOf(riderId))
+                .add("orderType", String.valueOf(orderType))
+                .add("state", String.valueOf(state))
+                .build();
+        Request request = new Request.Builder()
+                .url(ORDER_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
 
-    public static void requestOrdersList(int shopId, int type, Callback callback) {
+    public static void shopRequestOrdersList(int shopId, int type, Callback callback) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
                 .add("shopId", String.valueOf(shopId))
@@ -200,6 +220,36 @@ public class OkHttpUtil {
                 .build();
         Request request = new Request.Builder()
                 .url(REQUEST_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+
+    public static void riderRequestOrdersList(int riderId, int type, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("riderId", String.valueOf(riderId))
+                .add("type", String.valueOf(type))
+                .add("order", String.valueOf(ORDER_RIDER_REQUEST_ORDERS_LIST))
+                .build();
+        Request request = new Request.Builder()
+                .url(ORDER_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void riderUpdateLocation(int riderId, double latitude, double lontitude, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("riderId", String.valueOf(riderId))
+                .add("latitude", String.valueOf(latitude))
+                .add("lontitude", String.valueOf(lontitude))
+                .add("order", String.valueOf(ORDER_RIDER_UPDATE_LOCATION))
+                .build();
+        Request request = new Request.Builder()
+                .url(ORDER_URL)
                 .post(body)
                 .build();
         client.newCall(request).enqueue(callback);

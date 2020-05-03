@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cn.android.yhogp2">
-    <!-- 允许程序读取底层系统日志文件 -->
+    <!-- 允许访问振动设备 -->
     <application
         android:name=".application.MainApplication"
         android:allowBackup="true"
@@ -11,10 +11,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.shop.HistoryOrderActivity"></activity>
+        <activity android:name=".activity.rider.RiderHistoryActivity"></activity>
+        <activity android:name=".activity.shop.HistoryOrderActivity" />
         <activity android:name=".activity.shop.NewOrderActivity" />
         <activity android:name=".activity.shop.GoodsSettingActivity" />
-        <activity android:name=".activity.rIder.RiderHomeActivity" />
+        <activity android:name=".activity.rider.RiderHomeActivity" />
         <activity android:name=".activity.shop.ShopHomeActivity" />
         <activity android:name=".activity.HomeActivity" />
         <activity android:name=".activity.RegisterActivity" />
@@ -37,13 +38,13 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-    </application> <!-- 允许访问振动设备 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 允许使用PowerManager的 WakeLocks保持进程在休眠时从屏幕消失 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 允许程序读取或写入系统设置 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- android 9.0上使用前台服务，需要添加权限 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 用于读取手机当前的状态 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 读取缓存数据 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 获取模拟定位信息 -->
+    </application> <!-- 允许使用PowerManager的 WakeLocks保持进程在休眠时从屏幕消失 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 允许程序读取或写入系统设置 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- android 9.0上使用前台服务，需要添加权限 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 用于读取手机当前的状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 读取缓存数据 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 获取模拟定位信息 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.READ_LOGS" />

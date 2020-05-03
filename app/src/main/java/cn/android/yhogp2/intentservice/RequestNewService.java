@@ -44,7 +44,7 @@ public class RequestNewService extends IntentService {
     }
 
     private void doRequestNewOrder() {
-        OkHttpUtil.requestNewOrder(MainApplication.loginShop.getShopId(), new Callback() {
+        OkHttpUtil.shopRequestNewOrder(MainApplication.loginShop.getShopId(), new Callback() {
             Message msg = ShopHomeActivity.orderHandler.obtainMessage();
 
             @Override

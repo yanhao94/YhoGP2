@@ -79,6 +79,18 @@
             android:maxLength="15"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:textColorHint="#c5c5c5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tiet_registerTel"
+            android:singleLine="true"
+            android:hint="电话"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <RadioGroup
         android:layout_width="match_parent"

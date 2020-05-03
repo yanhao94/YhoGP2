@@ -6,6 +6,7 @@ public class Shop {
 	private String addr;
 	private String fullAddr;
 	private String introduction;
+	private String tel;
 	private double score;
 	private double favorableRate;
 	private double distance;//toUser
@@ -34,8 +35,15 @@ public class Shop {
 		this.minPay = minPay;
 		this.deliverPay = deliverPay;
 	}
-	
-	
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
 	public int getShopId() {
 		return ShopId;
 	}

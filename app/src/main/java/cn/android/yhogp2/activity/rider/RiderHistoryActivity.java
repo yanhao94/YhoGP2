@@ -1,4 +1,4 @@
-package cn.android.yhogp2.activity.shop;
+package cn.android.yhogp2.activity.rider;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.android.yhogp2.R;
+import cn.android.yhogp2.activity.shop.OrderPageRcvAdapter;
 import cn.android.yhogp2.application.MainApplication;
 import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.uitils.OkHttpUtil;
@@ -29,29 +30,28 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class HistoryOrderActivity extends AppCompatActivity {
+public class RiderHistoryActivity extends AppCompatActivity {
 
-    @BindView(R.id.rcv_HistoryOrder)
-    RecyclerView rcvHistoryOrder;
-    public static  Handler handler;
+    @BindView(R.id.rcv_riderHistoryOrder)
+    RecyclerView rcvRiderHistoryOrder;
+
+    public static Handler handler;
     public static List<Order> ordersList;
     public static OrderPageRcvAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history_order);
+        setContentView(R.layout.activity_rider_history);
         ButterKnife.bind(this);
         init();
     }
-
     private void init() {
         ordersList= new ArrayList<>();
         initHandler();
         initRcv();
     }
-
     private void initRcv() {
-        OkHttpUtil.shopRequestOrdersList(MainApplication.loginShop.getShopId(), OkHttpUtil.TYPE_ORDER_HISTORY, new Callback() {
+        OkHttpUtil.riderRequestOrdersList(MainApplication.loginShop.getShopId(), OkHttpUtil.TYPE_ORDER_HISTORY, new Callback() {
             Message msg = handler.obtainMessage();
 
             @Override
@@ -68,7 +68,7 @@ public class HistoryOrderActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
             }
         });
-        rcvHistoryOrder.setLayoutManager(new LinearLayoutManager(this));
+        rcvRiderHistoryOrder.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @SuppressLint("HandlerLeak")
@@ -83,9 +83,9 @@ public class HistoryOrderActivity extends AppCompatActivity {
                         if (!responseStr.equals("null")) {
                             ordersList = TextUtilTools.fromToJson(responseStr, new TypeToken<List<Order>>() {
                             }.getType());
-                           // adapter.notifyDataSetChanged();
+                            // adapter.notifyDataSetChanged();
                             adapter = new OrderPageRcvAdapter(ordersList,OrderPageRcvAdapter.TYPE_HISTORY);
-                            rcvHistoryOrder.setAdapter(adapter);
+                            rcvRiderHistoryOrder.setAdapter(adapter);
 
                         } else {
                             TextUtilTools.myToast(getApplicationContext(), "宁当前暂时没有订单", 1);

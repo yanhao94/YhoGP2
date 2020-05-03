@@ -1,28 +1,24 @@
 package cn.android.yhogp2.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 
-import java.util.List;
-
 import cn.android.yhogp2.R;
-import cn.android.yhogp2.activity.rIder.RiderHomeActivity;
+import cn.android.yhogp2.activity.rider.RiderHomeActivity;
 import cn.android.yhogp2.activity.shop.ShopHomeActivity;
 import cn.android.yhogp2.application.MainApplication;
-import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.uitils.LaunchDialog;
 import cn.android.yhogp2.uitils.LoginUtil;
 import cn.android.yhogp2.uitils.OkHttpUtil;
@@ -38,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler handler;
     private static SharedPreferences sp_user;
     private static LaunchDialog launchDialog;
-
-
 
 
     @Override
@@ -63,10 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rb_loginShop = findViewById(R.id.rb_loginShop);
         findViewById(R.id.btn_loginDialog_login).setOnClickListener(this);
         findViewById(R.id.btn_loginDialog_register).setOnClickListener(this);
-        LoginUtil.initLoginUtil(this, false);
+        LoginUtil.initLoginUtil(this);
         initLoginHandler();
     }
-
 
 
     private void initLoginHandler() {
@@ -91,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String account = tiet_loginDialog_account.getText().toString();
                     String password = tiet_loginDialog_password.getText().toString();
                     OkHttpUtil.CLIENT_TYPE = rb_loginShop.isChecked() ? "1" : "2";
-                    LoginUtil.loginWithOkHttp(account, password, handler);
+                    LoginUtil.loginWithOkHttp(account, password, handler, false);
                 }
                 break;
             case R.id.btn_loginDialog_register:
@@ -110,5 +103,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!rb_loginShop.isChecked() && !rb_loginRider.isChecked())
             TextUtilTools.myToast(getApplicationContext(), "请选择登录类型", 0);
         return false;
+    }
+
+    public static void loginOut(Context context) {
+        MainApplication.haveLogined = false;
+        MainApplication.loginShop = null;
+        MainApplication.loginRider = null;
+        SharedPreferences sp_user = context.getSharedPreferences("client", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp_user.edit();
+        editor.clear();
+        editor.apply();
+//        Message msg = MainActivity.handler.obtainMessage();
+//        msg.what = MainApplication.LOGIN_OUT;
+//        msg.arg1 = 0;
+//        MainActivity.handler.sendMessage(msg);
+        context.startActivity(new Intent(context, MainActivity.class));
     }
 }

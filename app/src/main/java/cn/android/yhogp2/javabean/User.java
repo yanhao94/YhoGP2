@@ -4,6 +4,7 @@ public class User {
 	private String account;
 	private String password;
 	private String name;
+	private String tel;
 	private int userId;
 	private int ordersAll = 0;
 	private int ordersEx = 0;
@@ -31,8 +32,15 @@ public class User {
 		this.inserTime = inserTime;
 	}
 
-	
-	
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
 	public int getUserId() {
 		return userId;
 	}

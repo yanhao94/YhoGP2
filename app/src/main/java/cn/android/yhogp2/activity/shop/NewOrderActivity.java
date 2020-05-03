@@ -96,7 +96,7 @@ public class NewOrderActivity extends AppCompatActivity {
     }
 
     private void initRcv() {
-        OkHttpUtil.requestOrdersList(MainApplication.loginShop.getShopId(), OkHttpUtil.TYPE_ORDER_NEW, new Callback() {
+        OkHttpUtil.shopRequestOrdersList(MainApplication.loginShop.getShopId(), OkHttpUtil.TYPE_ORDER_NEW, new Callback() {
             Message msg = handler.obtainMessage();
 
             @Override

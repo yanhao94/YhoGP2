@@ -26,15 +26,13 @@ import okhttp3.Response;
 public class LoginUtil {
     private static Context context;
     private static LaunchDialog launchDialog;
-    private static boolean isAuto;
 
 
-    public static void initLoginUtil(Context mcontext,boolean misAuto) {
+    public static void initLoginUtil(Context mcontext) {
         context = mcontext;
-        isAuto=misAuto;
     }
 
-    public static void loginWithOkHttp(final String account, final String password, final Handler handler) {
+    public static void loginWithOkHttp(final String account, final String password, final Handler handler,Boolean isAuto) {
         if (context != null&&!isAuto)
             launchDialog = new LaunchDialog(context);
         OkHttpUtil.loginWithOkHttp(account, password, new okhttp3.Callback() {
@@ -86,15 +84,4 @@ public class LoginUtil {
         editor.apply();
     }
 
-
-    public static void loginOut(Context context) {
-        MainApplication.haveLogined = false;
-        MainApplication.loginShop = null;
-        MainApplication.loginRider = null;
-        SharedPreferences sp_user = context.getSharedPreferences("client", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp_user.edit();
-        editor.clear();
-        editor.apply();
-        context.startActivity(new Intent(context, MainActivity.class));
-    }
 }

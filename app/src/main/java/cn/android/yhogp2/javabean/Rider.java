@@ -5,13 +5,21 @@ public class Rider {
 	private String pwd;
 	private String name;
 	private String insertTime;
+	private String tel;
 	private int RiderId;
 	private int ordersAll;
 	private int ordersEx;
 	private int ordersDefault;
 	private double chargeAll;
 
-	
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
 	public int getRiderId() {
 		return RiderId;
 	}

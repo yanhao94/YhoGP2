@@ -1,5 +1,6 @@
 package cn.android.yhogp2.activity.shop;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.android.yhogp2.R;
+import cn.android.yhogp2.activity.MainActivity;
 import cn.android.yhogp2.application.MainApplication;
 import cn.android.yhogp2.intentservice.RequestNewService;
 import cn.android.yhogp2.javabean.Goods;
@@ -173,22 +176,34 @@ public class ShopHomeActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_shopSetting:
+                showLoginOutDialog();
                 break;
             case R.id.tv_shopGoodsSelectAll:
                 break;
             case R.id.tv_shopGoodsSelectCancel:
                 break;
             case R.id.iv_addGood:
-                startActivity(new Intent(this,GoodsSettingActivity.class));
+                startActivity(new Intent(this, GoodsSettingActivity.class));
                 break;
             case R.id.iv_subtractGood:
                 break;
             case R.id.btn_shopNewOrders:
-                startActivity(new Intent(this,NewOrderActivity.class));
+                startActivity(new Intent(this, NewOrderActivity.class));
                 break;
             case R.id.btn_shopOrdersHistory:
-                startActivity(new Intent(this,HistoryOrderActivity.class));
+                startActivity(new Intent(this, HistoryOrderActivity.class));
                 break;
         }
+    }
+
+    private void showLoginOutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("要登出不");
+        builder.setPositiveButton("是", (dialogInterface, i) -> {
+            MainActivity.loginOut(this);
+        });
+        builder.setNegativeButton("不", (dialogInterface, i) -> {
+        });
+        builder.show();
     }
 }

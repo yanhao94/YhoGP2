@@ -7,6 +7,9 @@ public class Order {
     private String shopName;
     private String riderName;
     private String userName;
+    private String shopTel;
+    private String riderTel;
+    private String userTel;
     private double state;
     private String time;
     private String content;
@@ -20,6 +23,9 @@ public class Order {
     private int imageId;
     private double charge;
     private double deliveryFee;
+    private double shopLatitude;
+    private double shopLontitude;
+    private double riderDistance;
 
     public final static double SHOP_REJECT_ORDERS = -1;
     public final static double USER_SUMMIT_ORDERS = 0;// 用户已下单
@@ -29,10 +35,57 @@ public class Order {
     public final static double RIDER_DISTRUBUTION = 3;
     public final static double ORDER_FINISH = 4;
 
+    public double getShopLatitude() {
+        return shopLatitude;
+    }
+
+    public void setShopLatitude(double shopLatitude) {
+        this.shopLatitude = shopLatitude;
+    }
+
+    public double getShopLontitude() {
+        return shopLontitude;
+    }
+
+    public void setShopLontitude(double shopLontitude) {
+        this.shopLontitude = shopLontitude;
+    }
+
+    public double getRiderDistance() {
+        return riderDistance;
+    }
+
+    public void setRiderDistance(double riderDistance) {
+        this.riderDistance = riderDistance;
+    }
+
+    public String getShopTel() {
+        return shopTel;
+    }
+
+    public void setShopTel(String shopTel) {
+        this.shopTel = shopTel;
+    }
+
+    public String getRiderTel() {
+        return riderTel;
+    }
+
+    public void setRiderTel(String riderTel) {
+        this.riderTel = riderTel;
+    }
+
+    public String getUserTel() {
+        return userTel;
+    }
+
+    public void setUserTel(String userTel) {
+        this.userTel = userTel;
+    }
+
     public String getAddressJson() {
         return addressJson;
     }
-
     public void setAddressJson(String addressJson) {
         this.addressJson = addressJson;
     }

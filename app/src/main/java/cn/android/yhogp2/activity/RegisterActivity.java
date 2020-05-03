@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -38,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputEditText tiet_registerSurePassword;
     private TextInputEditText tiet_registerAddr;
     private TextInputEditText tiet_registerDeliveryDistance;
+    private TextInputEditText tiet_registerTel;
     private TextView registerLocation;
     private RadioButton rb_shop;
     private RadioButton rb_rider;
@@ -66,6 +66,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         tiet_registerSurePassword = findViewById(R.id.tiet_registerSurePassword);
         tiet_registerAddr = findViewById(R.id.tiet_registerAddr);
         tiet_registerDeliveryDistance = findViewById(R.id.tiet_registerDeliveryDistance);
+        tiet_registerTel=findViewById(R.id.tiet_registerTel);
         registerLocation = findViewById(R.id.registerLocation);
         rb_shop = findViewById(R.id.rb_Shop);
         rb_rider = findViewById(R.id.rb_rider);
@@ -73,14 +74,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         handler = new RequestHandler() {
             @Override
             public void doRequestSuccess(Message msg) {
-                TextUtilTools.myToast(getApplicationContext(),"registerSuccess",0);
+                TextUtilTools.myToast(getApplicationContext(), "registerSuccess", 0);
                 //login and jump to home
                 //shop home and rider home
             }
 
             @Override
             public void setTYPE() {
-                REQUEST_TYPE=RequestHandler.REGISTER;
+                REQUEST_TYPE = RequestHandler.REGISTER;
             }
         }.getRequestHandler(this);
         locationHandler = new Handler() {
@@ -123,11 +124,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 String pwd = tiet_registerPassword.getText().toString();
                 String surePwd = tiet_registerSurePassword.getText().toString();
                 String name = tiet_registerName.getText().toString();
+                String tel=tiet_registerTel.getText().toString();
 
-                if (isRightInput(tiet_registerAccount, tiet_registerPassword, tiet_registerSurePassword, tiet_registerName)) {
-                    registerShop.setDeliveryDistance(Double.parseDouble(tiet_registerDeliveryDistance.getText().toString()));
-                    registerShop.setFullAddr(tiet_registerAddr.getText().toString());
-                    registerWithOkHttp(account, pwd, name, new Gson().toJson(registerShop));
+                if (isRightInput(tiet_registerAccount, tiet_registerPassword, tiet_registerSurePassword, tiet_registerName,tiet_registerTel)) {
+                    if (rb_shop.isChecked()) {
+                        registerShop.setDeliveryDistance(Double.parseDouble(tiet_registerDeliveryDistance.getText().toString()));
+                        registerShop.setFullAddr(tiet_registerAddr.getText().toString());
+                        registerWithOkHttp(account, pwd, name,tel ,new Gson().toJson(registerShop));
+                    } else {
+                        registerWithOkHttp(account, pwd, name,tel ,"");
+                    }
                 }
                 break;
             case R.id.registerGetLocation:
@@ -139,10 +145,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private void registerWithOkHttp(final String account, final String pwd, String name, String jsonShop) {
+    private void registerWithOkHttp(final String account, final String pwd, String name,String tel, String jsonShop) {
         launchDialog = new LaunchDialog(this);
         OkHttpUtil.CLIENT_TYPE = rb_rider.isChecked() ? "2" : "1";
-        OkHttpUtil.registerWithOkHttp(account, pwd, name, jsonShop, new Callback() {
+        OkHttpUtil.registerWithOkHttp(account, pwd, name, tel,jsonShop, new Callback() {
             Message msg = handler.obtainMessage();
 
             @Override
@@ -167,7 +173,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private boolean isRightInput(TextInputEditText account, TextInputEditText pwd, TextInputEditText surePwd, TextInputEditText name) {
+    private boolean isRightInput(TextInputEditText account, TextInputEditText pwd, TextInputEditText surePwd, TextInputEditText name,TextInputEditText tel) {
 
         if (!TextUtilTools.isNotEmpty(name)) {
             tiet_registerName.setError("昵称不能为空");
@@ -185,7 +191,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             tiet_registerSurePassword.setError("确认密码不能为空");
             return false;
         }
-
+        if(!TextUtilTools.isNotEmpty(tel))
+        {
+            tiet_registerSurePassword.setError("电话不能为空");
+            return false;
+        }
         if (!tiet_registerPassword.getText().toString().equals(tiet_registerSurePassword.getText().toString())) {
             tiet_registerSurePassword.setError("确认密码不等密码");
             return false;

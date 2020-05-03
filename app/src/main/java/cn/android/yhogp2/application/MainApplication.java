@@ -2,7 +2,6 @@ package cn.android.yhogp2.application;
 
 import android.app.Application;
 import android.app.Service;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -13,8 +12,6 @@ import com.baidu.mapapi.CoordType;
 import com.baidu.mapapi.SDKInitializer;
 
 import cn.android.yhogp2.BdLocationService.LocationService;
-import cn.android.yhogp2.activity.rIder.RiderHomeActivity;
-import cn.android.yhogp2.activity.shop.ShopHomeActivity;
 import cn.android.yhogp2.javabean.Rider;
 import cn.android.yhogp2.javabean.Shop;
 import cn.android.yhogp2.uitils.LoginUtil;
@@ -60,22 +57,22 @@ public class MainApplication extends Application {
 
             @Override
             public void setTYPE() {
-                REQUEST_TYPE=LOGIN;
+                REQUEST_TYPE = LOGIN;
             }
         }.getRequestHandler(this);
     }
 
     private void autoLogin() {
-        LoginUtil.initLoginUtil(this,true);
+        LoginUtil.initLoginUtil(this);
         SharedPreferences sp_client = getSharedPreferences("client", MODE_PRIVATE);
-        Log.i("sdsd","isLogin"+sp_client.getBoolean("isLogin", false)+"type"+sp_client.getString("type",""));
+        Log.i("sdsd", "isLogin" + sp_client.getBoolean("isLogin", false) + "type" + sp_client.getString("type", ""));
         if (sp_client.getBoolean("isLogin", false)) {
-            if(sp_client.getString("type","").equals("1"))
-                OkHttpUtil.CLIENT_TYPE="1";
+            if (sp_client.getString("type", "").equals("1"))
+                OkHttpUtil.CLIENT_TYPE = "1";
             else
-                OkHttpUtil.CLIENT_TYPE="2";
+                OkHttpUtil.CLIENT_TYPE = "2";
             LoginUtil.loginWithOkHttp(sp_client.getString("account", ""),
-                    sp_client.getString("password", ""), applicationHandler);
+                    sp_client.getString("password", ""), applicationHandler, true);
         }
     }
 }
