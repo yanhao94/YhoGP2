@@ -1,5 +1,6 @@
 package cn.android.yhogp2.activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -118,5 +119,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        msg.arg1 = 0;
 //        MainActivity.handler.sendMessage(msg);
         context.startActivity(new Intent(context, MainActivity.class));
+    }
+    public static  void showLoginOutDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("要登出不");
+        builder.setPositiveButton("是", (dialogInterface, i) -> {
+            MainActivity.loginOut(context);
+        });
+        builder.setNegativeButton("不", (dialogInterface, i) -> {
+        });
+        builder.show();
     }
 }

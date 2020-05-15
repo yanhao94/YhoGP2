@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClientOption;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
@@ -66,17 +67,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         tiet_registerSurePassword = findViewById(R.id.tiet_registerSurePassword);
         tiet_registerAddr = findViewById(R.id.tiet_registerAddr);
         tiet_registerDeliveryDistance = findViewById(R.id.tiet_registerDeliveryDistance);
-        tiet_registerTel=findViewById(R.id.tiet_registerTel);
+        tiet_registerTel = findViewById(R.id.tiet_registerTel);
         registerLocation = findViewById(R.id.registerLocation);
         rb_shop = findViewById(R.id.rb_Shop);
         rb_rider = findViewById(R.id.rb_rider);
+        rb_shop.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (b) {
+                tiet_registerAddr.setEnabled(true);
+                tiet_registerDeliveryDistance.setEnabled(true);
+            } else {
+                tiet_registerAddr.setEnabled(false);
+                tiet_registerDeliveryDistance.setEnabled(false);
+            }
+        });
         initLocationService();
         handler = new RequestHandler() {
             @Override
             public void doRequestSuccess(Message msg) {
                 TextUtilTools.myToast(getApplicationContext(), "registerSuccess", 0);
-                //login and jump to home
-                //shop home and rider home
+                finish();
             }
 
             @Override
@@ -88,6 +97,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
+                TextUtilTools.myToast(getApplicationContext(), "获取位置成功", 0);
                 registerLocation.setText(msg.obj.toString());
             }
         };
@@ -95,20 +105,27 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void initLocationService() {
         locationService = new LocationService(getApplicationContext());
+        LocationClientOption clientOption=locationService.getDefaultLocationClientOption();
+        clientOption.setLocationNotify(true);
+        locationService.setLocationOption(clientOption);
         mListener = new BDAbstractLocationListener() {
             @Override
             public void onReceiveLocation(BDLocation bdLocation) {
                 if (null != bdLocation && bdLocation.getLocType() != BDLocation.TypeServerError) {
                     Message msg = locationHandler.obtainMessage();
-                    if (bdLocation.getAddrStr() != null || !bdLocation.getAddrStr().equals("null") || !bdLocation.equals("")) {
-                        msg.obj = bdLocation.getAddrStr();
-                        locationHandler.sendMessage(msg);
-                        registerShop.setCityCode(Integer.parseInt(bdLocation.getCityCode()));
-                        registerShop.setAddr(bdLocation.getAddrStr());
-                        registerShop.setLatitude(bdLocation.getLatitude());
-                        registerShop.setLongtitude(bdLocation.getLongitude());
-                        locationService.stop();
+                    String addrrr = bdLocation.getAddrStr();
+                    registerShop.setCityCode(Integer.parseInt(bdLocation.getCityCode()));
+                    if (addrrr!= null || !addrrr.equals("null")) {
+                        registerShop.setAddr(addrrr);
+                    } else {
+                        registerShop.setAddr(bdLocation.getStreet());
+                        addrrr = bdLocation.getStreet();
                     }
+                    registerShop.setLatitude(bdLocation.getLatitude());
+                    registerShop.setLongtitude(bdLocation.getLongitude());
+                    msg.obj = addrrr;
+                    locationHandler.sendMessage(msg);
+                    locationService.stop();
                 }
             }
         };
@@ -124,15 +141,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 String pwd = tiet_registerPassword.getText().toString();
                 String surePwd = tiet_registerSurePassword.getText().toString();
                 String name = tiet_registerName.getText().toString();
-                String tel=tiet_registerTel.getText().toString();
+                String tel = tiet_registerTel.getText().toString();
 
-                if (isRightInput(tiet_registerAccount, tiet_registerPassword, tiet_registerSurePassword, tiet_registerName,tiet_registerTel)) {
+                if (isRightInput(tiet_registerAccount, tiet_registerPassword, tiet_registerSurePassword, tiet_registerName, tiet_registerTel)) {
                     if (rb_shop.isChecked()) {
                         registerShop.setDeliveryDistance(Double.parseDouble(tiet_registerDeliveryDistance.getText().toString()));
                         registerShop.setFullAddr(tiet_registerAddr.getText().toString());
-                        registerWithOkHttp(account, pwd, name,tel ,new Gson().toJson(registerShop));
+                        registerWithOkHttp(account, pwd, name, tel, new Gson().toJson(registerShop));
                     } else {
-                        registerWithOkHttp(account, pwd, name,tel ,"");
+                        registerWithOkHttp(account, pwd, name, tel, "");
                     }
                 }
                 break;
@@ -145,10 +162,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private void registerWithOkHttp(final String account, final String pwd, String name,String tel, String jsonShop) {
+    private void registerWithOkHttp(final String account, final String pwd, String name, String tel, String jsonShop) {
         launchDialog = new LaunchDialog(this);
         OkHttpUtil.CLIENT_TYPE = rb_rider.isChecked() ? "2" : "1";
-        OkHttpUtil.registerWithOkHttp(account, pwd, name, tel,jsonShop, new Callback() {
+        OkHttpUtil.registerWithOkHttp(account, pwd, name, tel, jsonShop, new Callback() {
             Message msg = handler.obtainMessage();
 
             @Override
@@ -160,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.body().string().equals("false")) {
+                if (response.body().string().equals("true")) {
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
@@ -173,7 +190,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private boolean isRightInput(TextInputEditText account, TextInputEditText pwd, TextInputEditText surePwd, TextInputEditText name,TextInputEditText tel) {
+    private boolean isRightInput(TextInputEditText account, TextInputEditText pwd, TextInputEditText surePwd, TextInputEditText name, TextInputEditText tel) {
 
         if (!TextUtilTools.isNotEmpty(name)) {
             tiet_registerName.setError("昵称不能为空");
@@ -191,8 +208,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             tiet_registerSurePassword.setError("确认密码不能为空");
             return false;
         }
-        if(!TextUtilTools.isNotEmpty(tel))
-        {
+        if (!TextUtilTools.isNotEmpty(tel)) {
             tiet_registerSurePassword.setError("电话不能为空");
             return false;
         }

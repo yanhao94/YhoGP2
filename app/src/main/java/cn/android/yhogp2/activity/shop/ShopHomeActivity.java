@@ -1,18 +1,15 @@
 package cn.android.yhogp2.activity.shop;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,10 +63,19 @@ public class ShopHomeActivity extends AppCompatActivity {
     Button btnShopNewOrders;
     @BindView(R.id.btn_shopOrdersHistory)
     Button btnShopOrdersHistory;
+    @BindView(R.id.btn_editShop)
+    Button btnEditShop;
+    @BindView(R.id.tv_shopDeliveryDistance)
+    TextView tvShopDeliveryDistance;
+    @BindView(R.id.tv_shopMinPay)
+    TextView tvShopMinPay;
     private Shop mShop;
     private List<Goods> goodsList;
     public static Handler mHandler;
     public static Handler orderHandler;
+
+    public final static int DELETE_GOODS_SUCCESS = 4;
+    public final static int CHANGE_SHOP_SUCCESS = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,19 @@ public class ShopHomeActivity extends AppCompatActivity {
                         List<Order> ordersList = (List<Order>) msg.obj;
                         TextUtilTools.myToast(getApplicationContext(), "接到" + ordersList.size() + "个新订单啦", 1);
                         break;
+                    case DELETE_GOODS_SUCCESS:
+                        requestGoods();
+                        TextUtilTools.myToast(getApplicationContext(), "删除商品成功", 0);
+                        break;
+                    case OkHttpUtil.REQUEST_FAIL_NET:
+                        TextUtilTools.myToast(getApplicationContext(), "败于网络", 0);
+                        break;
+                    case OkHttpUtil.REQUEST_FAIL_SERVER:
+                        TextUtilTools.myToast(getApplicationContext(), "败于服务器", 0);
+                        break;
+                    case CHANGE_SHOP_SUCCESS:
+                        init();
+                        break;
                 }
             }
         };
@@ -107,7 +126,6 @@ public class ShopHomeActivity extends AppCompatActivity {
 
     private void initRcvAdapter() {
         rcvShopGoods.setLayoutManager(new LinearLayoutManager(this));
-        Log.i("ssssa", "" + goodsList.get(0).getName());
         rcvShopGoods.setAdapter(new GoodsRcvAdapter(goodsList, this));
     }
 
@@ -117,6 +135,8 @@ public class ShopHomeActivity extends AppCompatActivity {
             public void doRequestSuccess(Message msg) {
                 String responseStr = String.valueOf(msg.obj);
                 if (responseStr.equals("还未添加商品")) {
+                } else if (responseStr.equals("have change ")) {
+                    requestGoods();
                 } else {
                     upDataGoodsList(responseStr);
                     initRcvAdapter();
@@ -150,7 +170,7 @@ public class ShopHomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
-                if (!responseStr.equals("") && !responseStr.equals("null") && responseStr != null) {
+                if (!responseStr.equals("") && !responseStr.equals("null") && responseStr != null && responseStr.charAt(0) != '<') {
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                     msg.obj = responseStr;
                 } else {
@@ -168,7 +188,12 @@ public class ShopHomeActivity extends AppCompatActivity {
         tvShopName.setText(mShop.getShopName());
         tvShopIntroduction.setText("介绍：" + mShop.getIntroduction());
         tvShopOrdersAll.setText("已完成订单：" + mShop.getFinishedOrders());
+        tvShopDeliveryDistance.setText("配送距离："+mShop.getDeliveryDistance());
+        tvShopMinPay.setText("最低消费："+mShop.getMinPay());
         tvShopType.setText("类型：" + mShop.getType());
+        btnEditShop.setOnClickListener(view -> {
+            startActivity(new Intent(this, EditShopActivity.class));
+        });
     }
 
 
@@ -176,7 +201,7 @@ public class ShopHomeActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_shopSetting:
-                showLoginOutDialog();
+                MainActivity.showLoginOutDialog(this);
                 break;
             case R.id.tv_shopGoodsSelectAll:
                 break;
@@ -194,16 +219,5 @@ public class ShopHomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, HistoryOrderActivity.class));
                 break;
         }
-    }
-
-    private void showLoginOutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("要登出不");
-        builder.setPositiveButton("是", (dialogInterface, i) -> {
-            MainActivity.loginOut(this);
-        });
-        builder.setNegativeButton("不", (dialogInterface, i) -> {
-        });
-        builder.show();
     }
 }

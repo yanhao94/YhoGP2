@@ -46,6 +46,7 @@
             android:id="@+id/tiet_settingPrice"
             android:singleLine="true"
             android:maxLength="10"
+            android:inputType="numberDecimal"
             android:hint="价格"
             android:enabled="false"
             android:layout_width="match_parent"
@@ -151,10 +152,6 @@
     </LinearLayout>
     <TextView
         android:id="@+id/tv_settingSalesAll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <TextView
-        android:id="@+id/tv_settingSalesMonth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView

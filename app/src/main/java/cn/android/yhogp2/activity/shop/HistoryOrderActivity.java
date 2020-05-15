@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,6 +64,7 @@ public class HistoryOrderActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
+                if(responseStr!=null&&responseStr.charAt(0)!='<')
                 msg.what = OkHttpUtil.REQUEST_SUCCESS;
                 msg.obj = responseStr;
                 handler.sendMessage(msg);

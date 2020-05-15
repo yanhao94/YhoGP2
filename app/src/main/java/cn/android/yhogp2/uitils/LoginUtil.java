@@ -41,8 +41,9 @@ public class LoginUtil {
                 if (context != null&&!isAuto)
                     launchDialog.shutDown();
                 final String responseData = response.body().string();
+
                 Message msg = handler.obtainMessage();
-                if (!responseData.equals("false")) {
+                if (!responseData.equals("false")&&responseData.charAt(0)!='<') {
                     msg.what = MainApplication.LOGIN_SUCCESS;
                     MainApplication.haveLogined = true;
                     saveUserRecord(account, password, OkHttpUtil.CLIENT_TYPE);
@@ -54,9 +55,8 @@ public class LoginUtil {
                     handler.sendMessage(msg);
 
                 } else {
-                    msg.what = MainApplication.AUTO_LOGIN_FAIL;
+                    msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
                     handler.sendMessage(msg);
-                    Log.i("loginText", "login fail by account");
                 }
                 MainApplication.TYPE = OkHttpUtil.CLIENT_TYPE;
             }

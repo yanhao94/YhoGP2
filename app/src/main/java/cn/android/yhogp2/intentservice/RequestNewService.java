@@ -40,6 +40,7 @@ public class RequestNewService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if(MainApplication.loginShop!=null)
         doRequestNewOrder();
     }
 
@@ -57,7 +58,7 @@ public class RequestNewService extends IntentService {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
 
-                if (!responseStr.equals("notNow")) {
+                if (!responseStr.equals("notNow")&&responseStr.charAt(0)!='<') {
                     msg.what = 1;
                     List<Order> newOrderList = TextUtilTools.fromToJson(responseStr, new TypeToken<List<Order>>() {
                     }.getType());

@@ -1,6 +1,7 @@
 package cn.android.yhogp2.activity.rider;
 
 
+import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,8 +34,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcvAdapter.ViewHolder> {
-    public static final int TYPE_GROUP = 0;
-    public static final int TYPE_EX = 1;
     public List<Order> orderList;
 
     public HistoryOrderRcvAdapter(List<Order> list_resource) {
@@ -52,31 +51,37 @@ public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcv
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            initHolder(holder,position);
+        initHolder(holder, position);
 
     }
 
 
-    private void initHolder(ViewHolder holder,int position) {
+    private void initHolder(ViewHolder holder, int position) {
+        Order order = orderList.get(position);
         holder.btnOrderItemReject.setVisibility(View.GONE);
-        holder.tvOrderItemUser.setText(orderList.get(position).getUserName());
-        holder.tvOrderItemState.setText(String.valueOf(orderList.get(position).getState()));//double 需转为为string来显示
-        holder.tvOrderItemTAq.setText(orderList.get(position).getContent());
-        holder.tvOrderItemTime.setText(orderList.get(position).getTime());
-        holder.tvOrderItemCharge.setText(String.valueOf(orderList.get(position).getCharge()));
-        holder.tvOrderItemUserAddr.setText(new Gson().fromJson(orderList.get(position).getAddressJson(), MyAddress.class).getUserAddr());
-        holder.btnOrderItemGet.setOnClickListener(view -> changeOrderState(position, orderList.get(position).getOrderId(),Order.RIDER_GET_ORDERS,1));
+        holder.btnOrderItemGet.setVisibility(View.GONE);
+        if (orderList.get(position).getState() < Order.ORDER_FINISH)
+            holder.btnOrderItemStateUp.setVisibility(View.VISIBLE);
+        holder.tvOrderItemUser.setText("用户：" + order.getUserName() + "\ntel:" + order.getUserTel() +
+                "\n商家：" + order.getShopName() + "\ntel:" + order.getRiderTel());
+        holder.tvOrderItemState.setText(order.getStateString());//double 需转为为string来显示
+        holder.tvOrderItemTAq.setText("商品内容" + order.getContent());
+        holder.tvOrderItemTime.setText(order.getTime());
+        holder.tvOrderItemCharge.setText("配送费¥：" + order.getDeliveryFee());
+        MyAddress myAddress = new Gson().fromJson(order.getAddressJson(), MyAddress.class);
+        holder.tvOrderItemUserAddr.setText("用户地址："+myAddress.getUserAddr()+"\n商家地址"+myAddress.getShopAddr());
+        holder.btnOrderItemStateUp.setOnClickListener(view -> changeOrderState(position, orderList.get(position).getOrderId(), orderList.get(position).getState() + 1, orderList.get(position).getRiderTel(), 1));
     }
 
     @Override
     public int getItemCount() {
-            return orderList.size();
+        return orderList.size();
     }
 
 
-    private void changeOrderState(int position, int orderId, double state, int type) {
-        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(),type, new Callback() {
-            Message msg = NewOrderActivity.handler.obtainMessage();
+    private void changeOrderState(int position, int orderId, double state, String riderTel, int type) {
+        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(), riderTel, type, new Callback() {
+            Message msg = RiderHistoryActivity.handler.obtainMessage();
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -87,20 +92,19 @@ public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcv
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.body().string().equals("true")) {
-                    msg.what = OkHttpUtil.REQUEST_SUCCESS;
+                    msg.what = OkHttpUtil.ORDER_RIDER_CHANGE_ORDER_STATE;
+                    msg.arg1 = position;
                     //更近訂單狀態
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 }
                 msg.obj = "changeState";
-                NewOrderActivity.handler.sendMessage(msg);
+                RiderHistoryActivity.handler.sendMessage(msg);
             }
         });
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.iv_orderItem_shop)
-        ImageView ivOrderItemShop;
         @BindView(R.id.tv_orderItem_user)
         TextView tvOrderItemUser;
         @BindView(R.id.tv_orderItem_state)
@@ -117,6 +121,8 @@ public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcv
         Button btnOrderItemGet;
         @BindView(R.id.btn_orderItem_reject)
         Button btnOrderItemReject;
+        @BindView(R.id.btn_orderItem_stateUp)
+        Button btnOrderItemStateUp;
 
         public ViewHolder(View itemView) {
             super(itemView);

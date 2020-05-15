@@ -5,6 +5,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -45,6 +46,12 @@ public class UpdateRiderLocationService extends IntentService {
     private static int updateTimes = 0;
 
     private final static int GET_NEW_ORDERS = 4;
+    public static double la;
+    public static double lo;
+    public static String city;
+    public static String str;
+    public static String cityCode;
+    public static String street;
 
     public UpdateRiderLocationService() {
         super("RequestNewService");
@@ -59,6 +66,7 @@ public class UpdateRiderLocationService extends IntentService {
     private void doUpdateRiderLocation() {
         initHandler();
         initLocationService();
+        // TextUtilTools.myToast(getApplicationContext(),"初始化发送定位完成",1);
     }
 
     @SuppressLint("HandlerLeak")
@@ -71,23 +79,8 @@ public class UpdateRiderLocationService extends IntentService {
                     case OkHttpUtil.REQUEST_SUCCESS:
                         if (updateTimes == 0)
                             TextUtilTools.myToast(getApplicationContext(), "成功发送位置", 1);
-                        updateTimes++;
-                        OkHttpUtil.riderRequestNewOrder(MainApplication.loginRider.getRiderId(), new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                            }
 
-                            @Override
-                            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                String responseStr = response.body().string();
-                                if (!responseStr.equals("null")) {
-                                    Message msg = locationHandler.obtainMessage();
-                                    msg.what = GET_NEW_ORDERS;
-                                    msg.obj=responseStr;
-                                    locationHandler.sendMessage(msg);
-                                }
-                            }
-                        });
+                        updateTimes++;
                         break;
                     case OkHttpUtil.REQUEST_FAIL_NET:
                         TextUtilTools.myToast(getApplicationContext(), "无法连接服务器，发送位置失败", 1);
@@ -96,9 +89,9 @@ public class UpdateRiderLocationService extends IntentService {
                         TextUtilTools.myToast(getApplicationContext(), "服务器异常，发送位置失败", 1);
                         break;
                     case GET_NEW_ORDERS:
-                      List<Order> list=  TextUtilTools.fromToJson((String)msg.obj , new TypeToken<List<Order>>() {
-                    }.getType());
-                      TextUtilTools.myToast(getApplicationContext(),"接到可获得订单"+list.size()+"单",1);
+                        List<Order> list = TextUtilTools.fromToJson((String) msg.obj, new TypeToken<List<Order>>() {
+                        }.getType());
+                        TextUtilTools.myToast(getApplicationContext(), "接到可获得订单" + list.size() + "单", 1);
                         break;
                 }
             }
@@ -113,11 +106,17 @@ public class UpdateRiderLocationService extends IntentService {
                 if (null != bdLocation && bdLocation.getLocType() != BDLocation.TypeServerError) {
                     Message msg = locationHandler.obtainMessage();
                     if (bdLocation.getAddrStr() != null || !bdLocation.getAddrStr().equals("null") || !bdLocation.equals("")) {
+                        lo=bdLocation.getLongitude();
+                        la=bdLocation.getLatitude();
+                        city=bdLocation.getCity();
+                        str=bdLocation.getAddrStr();
+                        cityCode=bdLocation.getCityCode();
+                        street=bdLocation.getStreet();
                         OkHttpUtil.riderUpdateLocation(MainApplication.loginRider.getRiderId(), bdLocation.getLatitude(), bdLocation.getLongitude(), new Callback() {
                             @Override
                             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                                 msg.what = OkHttpUtil.REQUEST_FAIL_NET;
-                                locationHandler.sendMessage(msg);
+                                //locationHandler.sendMessage(msg);
                             }
 
                             @Override
@@ -126,7 +125,7 @@ public class UpdateRiderLocationService extends IntentService {
                                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                                 else
                                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
-                                locationHandler.sendMessage(msg);
+                              //  locationHandler.sendMessage(msg);
                             }
                         });
                     }
@@ -135,5 +134,6 @@ public class UpdateRiderLocationService extends IntentService {
         };
         locationService.registerListener(mListener);
         locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        locationService.start();
     }
 }

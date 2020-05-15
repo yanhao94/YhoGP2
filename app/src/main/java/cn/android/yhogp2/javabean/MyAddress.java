@@ -1,11 +1,15 @@
 package cn.android.yhogp2.javabean;
 
-public class MyAddress {
+import java.io.Serializable;
+import java.util.List;
+
+public class MyAddress implements Serializable {
     private Double userLatitude;
     private Double userLongtitude;
     private Double shopLatitude;
     private Double shopLongtitude;
 
+    private String userDescribeAdd;
     private String userAddr;
     private String shopAddr;
 
@@ -19,6 +23,14 @@ public class MyAddress {
         this.userLongtitude = userLongtitude;
         this.shopLatitude = shopLatitude;
         this.shopLongtitude = shopLongtitude;
+    }
+
+    public String getUserDescribeAdd() {
+        return userDescribeAdd;
+    }
+
+    public void setUserDescribeAdd(String userDescribeAdd) {
+        this.userDescribeAdd = userDescribeAdd;
     }
 
     public Double getUserLatitude() {
@@ -68,4 +80,5 @@ public class MyAddress {
     public void setShopAddr(String shopAddr) {
         this.shopAddr = shopAddr;
     }
+
 }

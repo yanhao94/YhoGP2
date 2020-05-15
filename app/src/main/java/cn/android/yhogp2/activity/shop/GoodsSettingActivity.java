@@ -68,8 +68,6 @@ public class GoodsSettingActivity extends AppCompatActivity {
     CheckBox cbSetting12;
     @BindView(R.id.tv_settingSalesAll)
     TextView tvSettingSalesAll;
-    @BindView(R.id.tv_settingSalesMonth)
-    TextView tvSettingSalesMonth;
     @BindView(R.id.tv_settingPrTimes)
     TextView tvSettingPrTimes;
     @BindView(R.id.tv_settingNrTimes)
@@ -139,9 +137,17 @@ public class GoodsSettingActivity extends AppCompatActivity {
         tietSettingIntroduction.setText(mGoods.getIntroduction());
         tietSettingPrice.setText(String.valueOf(mGoods.getPrice()));
         tvSettingSalesAll.setText("总售：" + mGoods.getSalesAll());
-        tvSettingSalesMonth.setText("月售：" + mGoods.getSalesMonth());
         tvSettingPrTimes.setText("好评次数：" + mGoods.getPrTimes());
         tvSettingNrTimes.setText("差评次数：" + mGoods.getNrTimes());
+        initTypeCheckBox();
+    }
+
+    private void initTypeCheckBox() {
+        String mType = mGoods.getType();
+        for (int i = 0; i < 12; i++) {
+            if (mType.charAt(i) == '1')
+                checkGroup.get(i).setChecked(true);
+        }
     }
 
     @OnClick({R.id.btn_goodsEdit, R.id.btn_goodsSettingSummit})
@@ -172,18 +178,17 @@ public class GoodsSettingActivity extends AppCompatActivity {
         }
     }
 
-    private int getType() {
+    private String getType() {
         StringBuilder sb = new StringBuilder(15);
         for (CheckBox checkBox : checkGroup) {
             sb.append(checkBox.isChecked() ? 1 : 0);
         }
-        return Integer.parseInt(sb.toString());
+        return sb.toString();
     }
 
     private void addGoods() {
         OkHttpUtil.addGoods(new Gson().toJson(mGoods), new Callback() {
             Message msg = handler.obtainMessage();
-
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 msg.what = OkHttpUtil.REQUEST_FAIL_NET;

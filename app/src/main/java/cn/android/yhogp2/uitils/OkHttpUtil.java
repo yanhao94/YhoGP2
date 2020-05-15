@@ -7,7 +7,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class OkHttpUtil {
-    public final static String ORIGINAL_URL = "http://192.168.0.108:9090/AndroidService";
+    public final static String ORIGINAL_URL = "http://192.168.0.100:9090/AndroidService";
+    //  public final static String ORIGINAL_URL = "http://z0uyuhc0.xiaomy.net/AndroidService";
     public final static String LOGIN_URL = ORIGINAL_URL + "/LoginServlet";
     public final static String REGISTER_URL = ORIGINAL_URL + "/RegisterServlet";
     public final static String REQUEST_URL = ORIGINAL_URL + "/RequestServlet";
@@ -15,6 +16,7 @@ public class OkHttpUtil {
 
     public static final int TYPE_ORDER_NEW = 0;
     public static final int TYPE_ORDER_HISTORY = 1;
+
 
     public static String CLIENT_TYPE = "";
 
@@ -24,14 +26,17 @@ public class OkHttpUtil {
     public final static int ORDER_CHANGE_PASSWORD = 2;
     public final static int ORDER_REQUEST_SHOP_LIST = 3;
     public final static int ORDER_REQUEST_SHOP_GOODS = 4;
-    public final static int ORDER_ADD_GOODS = 6;
-    public final static int ORDER_CHANGE_GOODS = 7;
 
 
     public final static int ORDER_SHOP_REQUEST_NEW_ORDERSS = 1;
     public final static int ORDER_SHOP_CHANGE_ORDERS_STATE = 5;
     public final static int ORDER_SHOP_REQUEST_NEWORDERS_LIST = 6;
     public final static int ORDER_SHOP_REQUEST_HISTORY_ORDERS_LIST = 7;
+
+    public final static int ORDER_ADD_GOODS = 6;//mysql util 不同的servlet
+    public final static int ORDER_CHANGE_GOODS = 7;
+    public static final int ORDER_DELETE_GOODS = 8;
+    public final static int ORDER_CHANGE_SHOP = 9;
 
     public final static int ORDER_RIDER_REQUEST_ORDERS_LIST = 9;
     public final static int ORDER_RIDER_UPDATE_LOCATION = 10;
@@ -170,12 +175,15 @@ public class OkHttpUtil {
                 .build();
         client.newCall(request).enqueue(callback);
     }
-    public static void riderChangeOrderState(int orderId, double state, int riderId,int orderType,Callback callback) {
+
+    public static void riderChangeOrderState(int orderId, double state, int riderId, String riderTel, int orderType, Callback callback) {
         OkHttpClient client = new OkHttpClient();
+        //type == 1时，为单体操作
         RequestBody body = new FormBody.Builder()
                 .add("order", String.valueOf(ORDER_RIDER_CHANGE_ORDER_STATE))
                 .add("orderId", String.valueOf(orderId))
                 .add("riderId", String.valueOf(riderId))
+                .add("riderTel", riderTel)
                 .add("orderType", String.valueOf(orderType))
                 .add("state", String.valueOf(state))
                 .build();
@@ -199,6 +207,19 @@ public class OkHttpUtil {
         client.newCall(request).enqueue(callback);
     }
 
+    public static void changeShop(String shopJson, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("shopJson", shopJson)
+                .add("order", String.valueOf(ORDER_CHANGE_SHOP))
+                .build();
+        Request request = new Request.Builder()
+                .url(REQUEST_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
     public static void changeGoods(String goodsJson, Callback callback) {
         OkHttpClient client = new OkHttpClient();
         RequestBody body = new FormBody.Builder()
@@ -217,6 +238,19 @@ public class OkHttpUtil {
         RequestBody body = new FormBody.Builder()
                 .add("goodsJson", goodsJson)
                 .add("order", String.valueOf(ORDER_ADD_GOODS))
+                .build();
+        Request request = new Request.Builder()
+                .url(REQUEST_URL)
+                .post(body)
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void deleteGoods(int goodsId, Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        RequestBody body = new FormBody.Builder()
+                .add("goodsId", String.valueOf(goodsId))
+                .add("order", String.valueOf(ORDER_DELETE_GOODS))
                 .build();
         Request request = new Request.Builder()
                 .url(REQUEST_URL)

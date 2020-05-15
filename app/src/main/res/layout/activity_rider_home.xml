@@ -11,12 +11,29 @@
         android:gravity="center"
         android:text="实时订单"
         android:textSize="20sp" />
-    <TextView
-        android:id="@+id/tv_riderLoginOut"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="登出" />
+        android:orientation="horizontal">
+        <View
+            android:visibility="invisible"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+        <TextView
+            android:id="@+id/tv_routePlan"
+            android:text="路线规划"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"/>
+        <TextView
+            android:id="@+id/tv_riderLoginOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="登出" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

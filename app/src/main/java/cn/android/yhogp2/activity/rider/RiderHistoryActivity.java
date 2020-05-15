@@ -34,10 +34,11 @@ public class RiderHistoryActivity extends AppCompatActivity {
 
     @BindView(R.id.rcv_riderHistoryOrder)
     RecyclerView rcvRiderHistoryOrder;
-
+    private static final int ORDER_RIDER_CHANGE_ORDER_STATE = 4;
     public static Handler handler;
     public static List<Order> ordersList;
-    public static OrderPageRcvAdapter adapter;
+    public static HistoryOrderRcvAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +46,15 @@ public class RiderHistoryActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         init();
     }
+
     private void init() {
-        ordersList= new ArrayList<>();
+        ordersList = new ArrayList<>();
         initHandler();
         initRcv();
     }
+
     private void initRcv() {
-        OkHttpUtil.riderRequestOrdersList(MainApplication.loginShop.getShopId(), OkHttpUtil.TYPE_ORDER_HISTORY, new Callback() {
+        OkHttpUtil.riderRequestOrdersList(MainApplication.loginRider.getRiderId(), OkHttpUtil.TYPE_ORDER_HISTORY, new Callback() {
             Message msg = handler.obtainMessage();
 
             @Override
@@ -63,9 +66,10 @@ public class RiderHistoryActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
-                msg.what = OkHttpUtil.REQUEST_SUCCESS;
+              if(!responseStr.equals("false")&&responseStr.charAt(0)!='<')
+              { msg.what = OkHttpUtil.REQUEST_SUCCESS;
                 msg.obj = responseStr;
-                handler.sendMessage(msg);
+                handler.sendMessage(msg);}
             }
         });
         rcvRiderHistoryOrder.setLayoutManager(new LinearLayoutManager(this));
@@ -84,7 +88,7 @@ public class RiderHistoryActivity extends AppCompatActivity {
                             ordersList = TextUtilTools.fromToJson(responseStr, new TypeToken<List<Order>>() {
                             }.getType());
                             // adapter.notifyDataSetChanged();
-                            adapter = new OrderPageRcvAdapter(ordersList,OrderPageRcvAdapter.TYPE_HISTORY);
+                            adapter = new HistoryOrderRcvAdapter(ordersList);
                             rcvRiderHistoryOrder.setAdapter(adapter);
 
                         } else {
@@ -96,6 +100,10 @@ public class RiderHistoryActivity extends AppCompatActivity {
                         break;
                     case OkHttpUtil.REQUEST_FAIL_SERVER:
                         TextUtilTools.myToast(getApplicationContext(), "服务器故障稍后再试", 1);
+                        break;
+                    case OkHttpUtil.ORDER_RIDER_CHANGE_ORDER_STATE:
+                        TextUtilTools.myToast(getApplicationContext(), "订单状态更新成功", 0);
+                        initRcv();
                         break;
                 }
             }

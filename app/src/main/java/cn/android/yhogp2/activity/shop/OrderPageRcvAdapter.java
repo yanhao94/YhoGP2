@@ -54,12 +54,12 @@ public class OrderPageRcvAdapter extends RecyclerView.Adapter<OrderPageRcvAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.tvOrderItemUser.setText(list_resource.get(position).getUserName());
-        holder.tvOrderItemState.setText(String.valueOf(list_resource.get(position).getState()));//double 需转为为string来显示
+        holder.tvOrderItemState.setText(String.valueOf(list_resource.get(position).getStateString()));//double 需转为为string来显示
         holder.tvOrderItemTAq.setText(list_resource.get(position).getContent());
         holder.tvOrderItemTime.setText(list_resource.get(position).getTime());
         holder.tvOrderItemCharge.setText(String.valueOf(list_resource.get(position).getCharge()));
         holder.tvOrderItemUserAddr.setText(new Gson().fromJson(list_resource.get(position).getAddressJson(), MyAddress.class).getUserAddr());
-        if (type == TYPE_NEW) {
+        if (type == TYPE_NEW&&list_resource.size()>0) {
             holder.btnOrderItemGet.setTag(position);
             holder.btnOrderItemReject.setTag(position);
             holder.btnOrderItemGet.setOnClickListener(view -> changeOrderState(position, list_resource.get(position).getOrderId(), Order.SHOP_GET_ORDERS));
@@ -80,13 +80,10 @@ public class OrderPageRcvAdapter extends RecyclerView.Adapter<OrderPageRcvAdapte
         switch (view.getId()) {
             case R.id.btn_orderItem_get:
                 int position = (Integer) view.getTag();
-                Log.i("dsss", "btn_orderItem_get: position=" + position);
-
                 break;
             case R.id.btn_orderItem_reject:
                 int position1 = (Integer) view.getTag();
                 Log.i("dsss", "btn_orderItem_reject: position=" + position1);
-
                 break;
         }
     }
@@ -116,8 +113,6 @@ public class OrderPageRcvAdapter extends RecyclerView.Adapter<OrderPageRcvAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.iv_orderItem_shop)
-        ImageView ivOrderItemShop;
         @BindView(R.id.tv_orderItem_user)
         TextView tvOrderItemUser;
         @BindView(R.id.tv_orderItem_state)

@@ -9,14 +9,15 @@ public class Goods implements Serializable {
     private int prTimes;
     private int nrTimes;
     private int shopOwnerId;
-    private int type;
+    private int amount;
+    private String type;
     private String name;
     private String introduction;
     private Double price;
 
     public final static String TYPE[]={"糕点","面食","米饭","烧烤","海鲜","火锅","炸鸡","奶茶","咖啡","汉堡","快餐","其他"};
 
-    public Goods(int id, int shopOwnerId, String name, int type, String introduction, double price, int salesAll,
+    public Goods(int id, int shopOwnerId, String name, String type, String introduction, double price, int salesAll,
                  int salesMonth, int prTimes, int nrTimes) {
         this.id = id;
         this.shopOwnerId = shopOwnerId;
@@ -29,6 +30,14 @@ public class Goods implements Serializable {
         this.introduction = introduction;
         this.price = price;
 
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public Goods(int shopOwnerId) {
@@ -101,11 +110,11 @@ public class Goods implements Serializable {
         this.name = name;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -117,4 +126,20 @@ public class Goods implements Serializable {
         this.introduction = introduction;
     }
 
+    public String getTypeString() {
+        StringBuffer sb = new StringBuffer(128);
+        for (int i = 0; i < 12; i++) {
+            if (type.charAt(i) == '1')
+                sb.append(TYPE[i]).append("\t");
+        }
+        return sb.toString();
+    }
+    public int getTypeId()
+    {
+        for (int i = 0; i < 12; i++) {
+            if (type.charAt(i) == '1')
+                return i;
+        }
+        return 11;
+    }
 }

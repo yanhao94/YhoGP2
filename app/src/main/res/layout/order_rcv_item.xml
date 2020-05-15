@@ -7,11 +7,7 @@
       android:layout_width="match_parent"
       android:orientation="horizontal"
       android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/iv_orderItem_shop"
-        android:background="@drawable/icon"
-        android:layout_width="75dp"
-        android:layout_height="75dp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,7 +20,6 @@
             android:id="@+id/tv_orderItem_user"
             android:text="用户名"
             android:textStyle="bold"
-            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
@@ -44,13 +39,8 @@
             android:id="@+id/tv_orderItem_tAq"
             android:text="种类和数量"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:layout_weight="1"
-            android:text="共计￥" />
+            android:layout_weight="1"/>
         <TextView
             android:id="@+id/tv_orderItem_charge"
             android:text="20"
@@ -69,7 +59,6 @@
             android:layout_height="wrap_content">
           <TextView
               android:id="@+id/tv_orderItem_userAddr"
-              android:text="addr"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"/>
         <TextView
@@ -88,6 +77,13 @@
         <Button
             android:id="@+id/btn_orderItem_reject"
             android:text="拒单"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btn_orderItem_stateUp"
+            android:visibility="gone"
+            android:text="状态跟进"
             android:layout_gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

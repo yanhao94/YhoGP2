@@ -1,9 +1,18 @@
 package cn.android.yhogp2.activity.rider;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,13 +28,16 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.android.yhogp2.R;
+import cn.android.yhogp2.activity.MainActivity;
 import cn.android.yhogp2.application.MainApplication;
+import cn.android.yhogp2.intentservice.UpdateRiderLocationService;
 import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.javabean.OrdersGroup;
 import cn.android.yhogp2.javabean.RiderNewOrders;
@@ -49,11 +61,18 @@ public class RiderHomeActivity extends AppCompatActivity {
     RecyclerView rcvNewRiderOrder;
     @BindView(R.id.btn_ridersHistory)
     Button btnRidersHistory;
+    @BindView(R.id.tv_routePlan)
+    TextView tvRoutePlan;
 
     private List<OrdersGroup> listOrdersDefault;
     private List<Order> listOrdersEx;
-    private Handler handler;
+    public static Handler handler;
     private NewOrderRcvAdapter adapter;
+    private int adapterType = 0;
+    private String permissionInfo;
+
+    public static final int GET_ORDER_SUCCESS = 4;
+    public static final int GET_ORDER_FAIL_BY_UNFINISHED = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +83,19 @@ public class RiderHomeActivity extends AppCompatActivity {
     }
 
     private void init() {
+        getPersimmions();
+        initSendLocationService();
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         initHandler();
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            TextUtilTools.myToast(getApplicationContext(), "请打开定位，没定位它能好使吗？请宁开了定位后点击刷新重新获取", 0);
+        }
         getListResource();
         initRcv();
+    }
+
+    private void initSendLocationService() {
+        this.startService(new Intent(this, UpdateRiderLocationService.class));
     }
 
     @SuppressLint("HandlerLeak")
@@ -86,12 +115,34 @@ public class RiderHomeActivity extends AppCompatActivity {
                         TextUtilTools.myToast(getApplicationContext(), "获取列表成功", 1);
                         //set adapter
                         RiderNewOrders rno = new Gson().fromJson((String) msg.obj, RiderNewOrders.class);
-                        listOrdersDefault = TextUtilTools.fromToJson(rno.getListOrdersGroupJson(), new TypeToken<List<OrdersGroup>>() {
-                        }.getType());
-                        listOrdersEx = TextUtilTools.fromToJson(rno.getListOrderExJson(), new TypeToken<List<Order>>() {
-                        }.getType());
-                        if(listOrdersDefault!=null)
+                        Log.i("cesss", (String) msg.obj + !rno.getListOrdersGroupJson().equals("null"));
+                        if (!rno.getListOrdersGroupJson().equals("null"))
+                            listOrdersDefault = TextUtilTools.fromToJson(rno.getListOrdersGroupJson(), new TypeToken<List<OrdersGroup>>() {
+                            }.getType());
+                        if (!rno.getListOrderExJson().equals("null"))
+                            listOrdersEx = TextUtilTools.fromToJson(rno.getListOrderExJson(), new TypeToken<List<Order>>() {
+                            }.getType());
+                        if (listOrdersDefault != null && adapterType == 0) {
                             rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersDefault));
+                            tvGetOrderDefault.setTextColor(Color.RED);
+                            tvGetOrderEx.setTextColor(Color.BLUE);
+                        } else {
+                            tvGetOrderDefault.setTextColor(Color.BLUE);
+                            tvGetOrderEx.setTextColor(Color.RED);
+                            rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersEx, 1));
+                        }
+                        break;
+                    case GET_ORDER_SUCCESS:
+                        if (adapterType == 0) {
+                            listOrdersDefault.remove(msg.arg1);
+                            rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersDefault));
+                        } else {
+                            listOrdersEx.remove(msg.arg1);
+                            rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersEx, 1));
+                        }
+                        break;
+                    case GET_ORDER_FAIL_BY_UNFINISHED:
+                        TextUtilTools.myToast(getApplicationContext(), "还有未完成的订单，请先完成再来", 0);
                         break;
                 }
             }
@@ -111,7 +162,7 @@ public class RiderHomeActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
-                if (!responseStr.equals("null")) {
+                if (!responseStr.equals("null") && responseStr.charAt(0) != '<') {
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                     msg.obj = responseStr;
                 } else {
@@ -123,31 +174,94 @@ public class RiderHomeActivity extends AppCompatActivity {
     }
 
     private void initRcv() {
-        if(listOrdersDefault!=null)
-        adapter=new NewOrderRcvAdapter(listOrdersDefault);
+        if (listOrdersDefault != null)
+            adapter = new NewOrderRcvAdapter(listOrdersDefault);
         rcvNewRiderOrder.setAdapter(adapter);
         rcvNewRiderOrder.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    @OnClick({R.id.tv_riderLoginOut, R.id.tv_getOrderDefault, R.id.tv_getOrderEx, R.id.tv_reGetOrders, R.id.btn_ridersHistory})
+    @OnClick({R.id.tv_riderLoginOut, R.id.tv_getOrderDefault, R.id.tv_getOrderEx, R.id.tv_reGetOrders, R.id.btn_ridersHistory, R.id.tv_routePlan})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_riderLoginOut:
+                MainActivity.showLoginOutDialog(this);
                 break;
             case R.id.tv_getOrderDefault:
-                if(adapter.type==adapter.TYPE_EX)
-                    rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersDefault));
+                if (adapterType == adapter.TYPE_EX)
+                    rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersDefault == null ? new ArrayList<>() : listOrdersDefault));
+                adapterType = 0;
+                tvGetOrderDefault.setTextColor(Color.RED);
+                tvGetOrderEx.setTextColor(Color.BLUE);
+                if (listOrdersDefault == null)
+                    TextUtilTools.myToast(getApplicationContext(), "当前无拼单可接", 0);
                 break;
             case R.id.tv_getOrderEx:
-                if(adapter.type==adapter.TYPE_GROUP)
-                    rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersEx,1));
+                if (adapterType == adapter.TYPE_GROUP)
+                    rcvNewRiderOrder.setAdapter(new NewOrderRcvAdapter(listOrdersEx == null ? new ArrayList<>() : listOrdersEx, 1));
+                adapterType = 1;
+                tvGetOrderDefault.setTextColor(Color.BLUE);
+                tvGetOrderEx.setTextColor(Color.RED);
+                if (listOrdersEx == null)
+                    TextUtilTools.myToast(getApplicationContext(), "当前无专属单可接", 0);
                 break;
             case R.id.tv_reGetOrders:
                 getListResource();
                 break;
             case R.id.btn_ridersHistory:
-
+                startActivity(new Intent(this, RiderHistoryActivity.class));
+                break;
+            case R.id.tv_routePlan:
+                startActivity(new Intent(this, RoutePlanningActivity.class));
                 break;
         }
+    }
+
+    @TargetApi(23)
+    private void getPersimmions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ArrayList<String> permissions = new ArrayList<String>();
+            /***
+             * 定位权限为必须权限，用户如果禁止，则每次进入都会申请
+             */
+            // 定位精确位置
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            }
+            /*
+             * 读写权限和电话状态权限非必要权限(建议授予)只会申请一次，用户同意或者禁止，只会弹一次
+             */
+            // 读写权限
+            if (addPermission(permissions, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                permissionInfo += "Manifest.permission.WRITE_EXTERNAL_STORAGE Deny \n";
+            }
+            if (permissions.size() > 0) {
+                requestPermissions(permissions.toArray(new String[permissions.size()]), 127);
+            }
+        }
+    }
+
+    @TargetApi(23)
+    private boolean addPermission(ArrayList<String> permissionsList, String permission) {
+        // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            if (shouldShowRequestPermissionRationale(permission)) {
+                return true;
+            } else {
+                permissionsList.add(permission);
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    @TargetApi(23)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // TODO Auto-generated method stub
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

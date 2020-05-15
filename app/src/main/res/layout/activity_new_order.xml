@@ -19,7 +19,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
         <Button
             android:id="@+id/btn_getAll"
             android:text="全部接单"

@@ -108,6 +108,7 @@ public class NewOrderActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
+                if(responseStr!=null&&responseStr.charAt(0)!='<')
                 msg.what = OkHttpUtil.REQUEST_SUCCESS;
                 msg.obj = responseStr;
                 ordersList = TextUtilTools.fromToJson(responseStr, new TypeToken<List<Order>>() {
@@ -163,7 +164,6 @@ public class NewOrderActivity extends AppCompatActivity {
                 if (response.body().string().equals("true")) {
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                     adapter.list_resource.remove(position);
-                    adapter.notifyDataSetChanged();
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 }

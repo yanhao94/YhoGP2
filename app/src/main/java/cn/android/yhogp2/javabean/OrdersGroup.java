@@ -10,11 +10,20 @@ public class OrdersGroup {
     public List<Order> listOrders;
     public String ordersContent;
     private String time;
+    private String addressJsonList;
     private Date startDate;
     private Double centerLontitude;
     private Double centerLatitude;
     private Double riderDistance;
     private Double state;
+
+    public String getAddressJsonList() {
+        return addressJsonList;
+    }
+
+    public void setAddressJsonList(String addressJsonList) {
+        this.addressJsonList = addressJsonList;
+    }
 
     public OrdersGroup() {
         this.listOrders = new ArrayList<>();
@@ -94,5 +103,6 @@ public class OrdersGroup {
     public void setListOrders(List<Order> listOrders) {
         this.listOrders = listOrders;
     }
+
 
 }

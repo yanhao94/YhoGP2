@@ -34,6 +34,7 @@ public class Order {
     public final static double RIDER_GET_ORDERS = 2;
     public final static double RIDER_DISTRUBUTION = 3;
     public final static double ORDER_FINISH = 4;
+    public final static double ORDER_FINISH_EVALUATE = 5;
 
     public double getShopLatitude() {
         return shopLatitude;
@@ -217,5 +218,23 @@ public class Order {
     public String toString() {
         return shopName +
                 riderName + userName + state + time + content + type + goodsListJson + orderId + userId + shopId + riderId + charge;
+    }
+
+    public String getStateString() {
+        if (state == SHOP_REJECT_ORDERS)
+            return "商家已拒单";
+        if (state == USER_SUMMIT_ORDERS || state == SHOP_CHECKED_ORDERS)
+            return "已下单";
+        if (state == SHOP_GET_ORDERS)
+            return "商家已接单";
+        if (state == RIDER_GET_ORDERS)
+            return "骑手已接单";
+        if (state == RIDER_DISTRUBUTION)
+            return "骑手配送中";
+        if (state == ORDER_FINISH)
+            return "骑手已送达";
+        if (state == ORDER_FINISH_EVALUATE)
+            return "已评价";
+        return "错误状态";
     }
 }

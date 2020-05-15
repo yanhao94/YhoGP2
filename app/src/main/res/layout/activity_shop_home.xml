@@ -10,15 +10,27 @@
         android:layout_height="200dp"
         android:orientation="vertical"
         android:background="#D8D8F3">
-
-
-
-        <ImageView
-            android:id="@+id/iv_shopSetting"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:background="@drawable/setting" />
+            android:orientation="horizontal">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/btn_editShop"
+                android:background="#D8D8F3"
+                android:text="编辑商家"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/iv_shopSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/setting" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_shopName"
             android:layout_width="match_parent"
@@ -37,6 +49,14 @@
         </LinearLayout>
         <TextView
             android:id="@+id/tv_shopType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_shopDeliveryDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tv_shopMinPay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <TextView
@@ -74,6 +94,7 @@
             android:background="@drawable/item_add"/>
         <ImageView
             android:id="@+id/iv_subtractGood"
+            android:visibility="gone"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginLeft="10dp"
