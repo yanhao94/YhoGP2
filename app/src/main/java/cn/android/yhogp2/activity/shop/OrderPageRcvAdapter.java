@@ -65,6 +65,7 @@ public class OrderPageRcvAdapter extends RecyclerView.Adapter<OrderPageRcvAdapte
             holder.btnOrderItemGet.setOnClickListener(view -> changeOrderState(position, list_resource.get(position).getOrderId(), Order.SHOP_GET_ORDERS));
             holder.btnOrderItemReject.setOnClickListener(view -> changeOrderState(position, list_resource.get(position).getOrderId(), Order.SHOP_REJECT_ORDERS));
         } else {
+            holder.tvOrderItemUser.setText(list_resource.get(position).getUserName()+"\t"+list_resource.get(position).getUserTel());
             holder.btnOrderItemGet.setVisibility(View.GONE);
             holder.btnOrderItemReject.setVisibility(View.GONE);
         }
@@ -83,7 +84,6 @@ public class OrderPageRcvAdapter extends RecyclerView.Adapter<OrderPageRcvAdapte
                 break;
             case R.id.btn_orderItem_reject:
                 int position1 = (Integer) view.getTag();
-                Log.i("dsss", "btn_orderItem_reject: position=" + position1);
                 break;
         }
     }

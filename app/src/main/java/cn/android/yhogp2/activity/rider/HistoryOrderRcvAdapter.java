@@ -1,13 +1,11 @@
 package cn.android.yhogp2.activity.rider;
 
 
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -80,7 +78,8 @@ public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcv
 
 
     private void changeOrderState(int position, int orderId, double state, String riderTel, int type) {
-        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(), riderTel, type, new Callback() {
+        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(),
+                riderTel, type, new Callback() {
             Message msg = RiderHistoryActivity.handler.obtainMessage();
 
             @Override
@@ -94,7 +93,6 @@ public class HistoryOrderRcvAdapter extends RecyclerView.Adapter<HistoryOrderRcv
                 if (response.body().string().equals("true")) {
                     msg.what = OkHttpUtil.ORDER_RIDER_CHANGE_ORDER_STATE;
                     msg.arg1 = position;
-                    //更近訂單狀態
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 }

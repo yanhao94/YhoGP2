@@ -53,14 +53,14 @@ public class RequestNewService extends IntentService {
                 msg.what = -1;
                 ShopHomeActivity.orderHandler.sendMessage(msg);
             }
-
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
 
                 if (!responseStr.equals("notNow")&&responseStr.charAt(0)!='<') {
                     msg.what = 1;
-                    List<Order> newOrderList = TextUtilTools.fromToJson(responseStr, new TypeToken<List<Order>>() {
+                    List<Order> newOrderList = TextUtilTools.fromToJson(responseStr,
+                            new TypeToken<List<Order>>() {
                     }.getType());
                     msg.obj = newOrderList;
                     ShopHomeActivity.orderHandler.sendMessage(msg);

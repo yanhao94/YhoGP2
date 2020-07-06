@@ -49,6 +49,7 @@ import okhttp3.Response;
 
 public class RiderHomeActivity extends AppCompatActivity {
 
+
     @BindView(R.id.tv_riderLoginOut)
     TextView tvRiderLoginOut;
     @BindView(R.id.tv_getOrderDefault)
@@ -73,6 +74,7 @@ public class RiderHomeActivity extends AppCompatActivity {
 
     public static final int GET_ORDER_SUCCESS = 4;
     public static final int GET_ORDER_FAIL_BY_UNFINISHED = 5;
+    public static final int GET_ORDER_FAIL_BY_ORDER_STATE_HAVE_CHANGE = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +90,7 @@ public class RiderHomeActivity extends AppCompatActivity {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         initHandler();
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            TextUtilTools.myToast(getApplicationContext(), "请打开定位，没定位它能好使吗？请宁开了定位后点击刷新重新获取", 0);
+            TextUtilTools.myToast(getApplicationContext(), "请打开定位，否则骑手无法上传当前位置信息", 0);
         }
         getListResource();
         initRcv();
@@ -144,6 +146,9 @@ public class RiderHomeActivity extends AppCompatActivity {
                     case GET_ORDER_FAIL_BY_UNFINISHED:
                         TextUtilTools.myToast(getApplicationContext(), "还有未完成的订单，请先完成再来", 0);
                         break;
+                    case GET_ORDER_FAIL_BY_ORDER_STATE_HAVE_CHANGE:
+                        TextUtilTools.myToast(getApplicationContext(), "该订单状态已改变，点击刷新重新获取订单列表", 0);
+                        break;
                 }
             }
         };
@@ -184,7 +189,7 @@ public class RiderHomeActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_riderLoginOut:
-                MainActivity.showLoginOutDialog(this);
+                MainActivity.showLoginOutDialog(this, this);
                 break;
             case R.id.tv_getOrderDefault:
                 if (adapterType == adapter.TYPE_EX)
@@ -220,20 +225,12 @@ public class RiderHomeActivity extends AppCompatActivity {
     private void getPersimmions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ArrayList<String> permissions = new ArrayList<String>();
-            /***
-             * 定位权限为必须权限，用户如果禁止，则每次进入都会申请
-             */
-            // 定位精确位置
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
             }
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
             }
-            /*
-             * 读写权限和电话状态权限非必要权限(建议授予)只会申请一次，用户同意或者禁止，只会弹一次
-             */
-            // 读写权限
             if (addPermission(permissions, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 permissionInfo += "Manifest.permission.WRITE_EXTERNAL_STORAGE Deny \n";
             }
@@ -245,7 +242,6 @@ public class RiderHomeActivity extends AppCompatActivity {
 
     @TargetApi(23)
     private boolean addPermission(ArrayList<String> permissionsList, String permission) {
-        // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
         if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowRequestPermissionRationale(permission)) {
                 return true;

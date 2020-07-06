@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -84,7 +83,7 @@ public class RoutePlanningActivity extends AppCompatActivity {
                 switch (msg.what) {
                     case CANT_GET_ROUTE:
                         String route = (String) msg.obj;
-                        TextUtilTools.myToast(getApplicationContext(), "抱歉没有得到关于\n" + route + "的路线,您自便哈", 1
+                        TextUtilTools.myToast(getApplicationContext(), "抱歉没有得到关于\n" + route + "的路线", 1
                         );
                         break;
                 }
@@ -135,6 +134,21 @@ public class RoutePlanningActivity extends AppCompatActivity {
         mSearch = RoutePlanSearch.newInstance();
         OnGetRoutePlanResultListener listener = new OnGetRoutePlanResultListener() {
             @Override
+            public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
+                BikingRouteOverlay overlay = new BikingRouteOverlay(baiduMap);
+                if (bikingRouteResult.getRouteLines() != null && bikingRouteResult.getRouteLines()
+                        .size() > 0) {
+                    overlay.setData(bikingRouteResult.getRouteLines().get(0));
+                    overlay.addToMap();
+                } else {
+                    Message msg = handler.obtainMessage();
+                    msg.what = CANT_GET_ROUTE;
+                    msg.obj = content;
+                    handler.sendMessage(msg);
+                }
+            }
+
+            @Override
             public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
 
             }
@@ -159,28 +173,11 @@ public class RoutePlanningActivity extends AppCompatActivity {
 
             }
 
-            @Override
-            public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
-                BikingRouteOverlay overlay = new BikingRouteOverlay(baiduMap);
-                if (bikingRouteResult.getRouteLines() != null && bikingRouteResult.getRouteLines().size() > 0) {
-                    //获取路径规划数据,(以返回的第一条路线为例）
-                    //为BikingRouteOverlay实例设置数据
-                    overlay.setData(bikingRouteResult.getRouteLines().get(0));
-                    //在地图上绘制BikingRouteOverlay
-                    overlay.addToMap();
-                } else {
-                    Message msg = handler.obtainMessage();
-                    msg.what = CANT_GET_ROUTE;
-                    msg.obj = content;
-                    handler.sendMessage(msg);
-                }
-            }
         };
         mSearch.setOnGetRoutePlanResultListener(listener);
         if (brp != null) {
             mSearch.bikingSearch(brp);
         }
-
     }
 
     @Override
@@ -211,7 +208,6 @@ public class RoutePlanningActivity extends AppCompatActivity {
                     baiduMap.clear();
                     getGoodsNotes();
                     for (int i = 0; i < planNodeList.size(); i++) {
-                        Log.i("brpaaa", "getGoods no." + i + "：" + planNodeList.get(i).getName());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -226,7 +222,6 @@ public class RoutePlanningActivity extends AppCompatActivity {
                     baiduMap.clear();
                     getSendNotes();
                     for (int i = 0; i < planNodeList2.size(); i++) {
-                        Log.i("brpaaa", "sendGoods no." + i + "：" + planNodeList2.get(i).getName());
                     }
                     if (planNodeList2.size() == 1)
                         TextUtilTools.myToast(getApplicationContext(), "您已经在目的地", 1);
@@ -260,10 +255,8 @@ public class RoutePlanningActivity extends AppCompatActivity {
     private BikingRoutePlanOption getBrp(List<PlanNode> planNodes) {
         BikingRoutePlanOption brp = new BikingRoutePlanOption();
         brp.from(planNodes.get(0));
-        Log.i("brpaaa", "from:" + planNodes.get(0).getName());
         for (int i = 1; i < planNodes.size(); i++) {
             brp.to(planNodes.get(i));
-            Log.i("brpaaa", "to:" + planNodes.get(i).getName());
         }
         brp.ridingType(0);
         return brp;
@@ -274,8 +267,6 @@ public class RoutePlanningActivity extends AppCompatActivity {
         planNodeList2 = new ArrayList<>();
         planNodeList2.add(PlanNode.withCityNameAndPlaceName(city, UpdateRiderLocationService.street));
         limt.add(UpdateRiderLocationService.street);
-//        planNodeList2.add(PlanNode.withCityNameAndPlaceName(city, myAddressList.get(myAddressList.size() - 1).getShopAddr()));
-//        limt.add(myAddressList.get(myAddressList.size() - 1).getShopAddr());
         for (int i = 0; i < myAddressList.size(); i++) {
             String userAddr = myAddressList.get(i).getUserAddr();
             if (!coverIt(limt, userAddr)) {

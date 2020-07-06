@@ -1,7 +1,6 @@
 package cn.android.yhogp2.javabean;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class MyAddress implements Serializable {
     private Double userLatitude;

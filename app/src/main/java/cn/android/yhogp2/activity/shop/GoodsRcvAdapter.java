@@ -50,12 +50,9 @@ public class GoodsRcvAdapter extends RecyclerView.Adapter<GoodsRcvAdapter.ViewHo
             intent.putExtra("goods", goodsList.get(viewHolder.getAdapterPosition()));
             context.startActivity(intent);
         });
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                showDeleteDialog(goodsList.get(viewHolder.getAdapterPosition()).getId());
-                return false;
-            }
+        viewHolder.itemView.setOnLongClickListener(view12 -> {
+            showDeleteDialog(goodsList.get(viewHolder.getAdapterPosition()).getId());
+            return false;
         });
         return viewHolder;
     }
@@ -63,7 +60,8 @@ public class GoodsRcvAdapter extends RecyclerView.Adapter<GoodsRcvAdapter.ViewHo
     private void showDeleteDialog(int goodsId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("是否删除此商品");
-        builder.setPositiveButton("是", (dialogInterface, i) -> OkHttpUtil.deleteGoods(goodsId, new Callback() {
+        builder.setPositiveButton("是", (dialogInterface, i) -> OkHttpUtil.deleteGoods(goodsId
+                , new Callback() {
             Message msg = ShopHomeActivity.orderHandler.obtainMessage();
 
             @Override
@@ -136,9 +134,5 @@ public class GoodsRcvAdapter extends RecyclerView.Adapter<GoodsRcvAdapter.ViewHo
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-    }
-
-    public void showCheckBox() {
-
     }
 }

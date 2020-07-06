@@ -114,12 +114,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if (null != bdLocation && bdLocation.getLocType() != BDLocation.TypeServerError) {
                     Message msg = locationHandler.obtainMessage();
                     String addrrr = bdLocation.getAddrStr();
+                    String street = bdLocation.getStreet();
                     registerShop.setCityCode(Integer.parseInt(bdLocation.getCityCode()));
-                    if (addrrr!= null || !addrrr.equals("null")) {
-                        registerShop.setAddr(addrrr);
+                    if (street!= null || !street.equals("null")) {
+                        registerShop.setAddr(street);
                     } else {
-                        registerShop.setAddr(bdLocation.getStreet());
-                        addrrr = bdLocation.getStreet();
+                        registerShop.setAddr(addrrr);
+                        addrrr = addrrr;
                     }
                     registerShop.setLatitude(bdLocation.getLatitude());
                     registerShop.setLongtitude(bdLocation.getLongitude());
@@ -147,7 +148,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     if (rb_shop.isChecked()) {
                         registerShop.setDeliveryDistance(Double.parseDouble(tiet_registerDeliveryDistance.getText().toString()));
                         registerShop.setFullAddr(tiet_registerAddr.getText().toString());
+                        if(registerShop.getCityCode()!=0)
                         registerWithOkHttp(account, pwd, name, tel, new Gson().toJson(registerShop));
+                        else
+                            TextUtilTools.myToast(getApplicationContext(),"请先完成位置信息的获取",0);
                     } else {
                         registerWithOkHttp(account, pwd, name, tel, "");
                     }
@@ -162,25 +166,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private void registerWithOkHttp(final String account, final String pwd, String name, String tel, String jsonShop) {
+    private void registerWithOkHttp(final String account, final String pwd, String name, String tel,
+                                    String jsonShop) {
         launchDialog = new LaunchDialog(this);
         OkHttpUtil.CLIENT_TYPE = rb_rider.isChecked() ? "2" : "1";
         OkHttpUtil.registerWithOkHttp(account, pwd, name, tel, jsonShop, new Callback() {
             Message msg = handler.obtainMessage();
-
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 handler.sendMessage(msg);
                 launchDialog.shutDown();
             }
-
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.body().string().equals("true")) {
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                    msg.obj="账号已存在";
                 }
                 handler.sendMessage(msg);
                 launchDialog.shutDown();

@@ -66,7 +66,6 @@ public class UpdateRiderLocationService extends IntentService {
     private void doUpdateRiderLocation() {
         initHandler();
         initLocationService();
-        // TextUtilTools.myToast(getApplicationContext(),"初始化发送定位完成",1);
     }
 
     @SuppressLint("HandlerLeak")
@@ -79,7 +78,6 @@ public class UpdateRiderLocationService extends IntentService {
                     case OkHttpUtil.REQUEST_SUCCESS:
                         if (updateTimes == 0)
                             TextUtilTools.myToast(getApplicationContext(), "成功发送位置", 1);
-
                         updateTimes++;
                         break;
                     case OkHttpUtil.REQUEST_FAIL_NET:
@@ -116,7 +114,6 @@ public class UpdateRiderLocationService extends IntentService {
                             @Override
                             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                                 msg.what = OkHttpUtil.REQUEST_FAIL_NET;
-                                //locationHandler.sendMessage(msg);
                             }
 
                             @Override
@@ -125,7 +122,6 @@ public class UpdateRiderLocationService extends IntentService {
                                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
                                 else
                                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
-                              //  locationHandler.sendMessage(msg);
                             }
                         });
                     }

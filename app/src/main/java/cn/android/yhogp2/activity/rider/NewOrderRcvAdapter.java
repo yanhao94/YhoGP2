@@ -2,12 +2,10 @@ package cn.android.yhogp2.activity.rider;
 
 
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,7 +36,6 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static cn.android.yhogp2.activity.shop.OrderPageRcvAdapter.TYPE_NEW;
 
 public class NewOrderRcvAdapter extends RecyclerView.Adapter<NewOrderRcvAdapter.ViewHolder> {
     public static final int TYPE_GROUP = 0;
@@ -106,15 +103,9 @@ public class NewOrderRcvAdapter extends RecyclerView.Adapter<NewOrderRcvAdapter.
 
 
     private void changeOrderState(int position, int orderId, double state, String riderTel, int type) {
-        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(), riderTel, type, new Callback() {
+        OkHttpUtil.riderChangeOrderState(orderId, state, MainApplication.loginRider.getRiderId(),
+                riderTel, type, new Callback() {
             Message msg = RiderHomeActivity.handler.obtainMessage();
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                msg.what = OkHttpUtil.REQUEST_FAIL_NET;
-                RiderHomeActivity.handler.sendMessage(msg);
-            }
-
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String responseStr = response.body().string();
@@ -122,24 +113,33 @@ public class NewOrderRcvAdapter extends RecyclerView.Adapter<NewOrderRcvAdapter.
                     msg.what = RiderHomeActivity.GET_ORDER_SUCCESS;
                     msg.arg1 = position;
                     if (type == 0) {
-                        List<MyAddress> myAddressList = TextUtilTools.fromToJson(ordersGroupList.get(position).getAddressJsonList(), new TypeToken<List<MyAddress>>() {
+                        List<MyAddress> myAddressList = TextUtilTools.fromToJson(ordersGroupList.
+                                        get(position).getAddressJsonList(),
+                                new TypeToken<List<MyAddress>>() {
                         }.getType());
-                        Log.i("locz",ordersGroupList.get(position).getAddressJsonList());
                         RoutePlanningActivity.myAddressList = myAddressList;
                     } else {
                         List<MyAddress> addresses = new ArrayList<>();
-                        addresses.add(new Gson().fromJson(orderList.get(position).getAddressJson(), MyAddress.class));
+                        addresses.add(new Gson().fromJson(orderList.get(position).getAddressJson(),
+                                MyAddress.class));
                         RoutePlanningActivity.myAddressList = addresses;
                     }
 
-                } else if (responseStr.equals("unfinished"))
+                }else if (responseStr.equals("orderStateHaveChange"))
+                    msg.what = RiderHomeActivity.GET_ORDER_FAIL_BY_ORDER_STATE_HAVE_CHANGE;
+                else if (responseStr.equals("unfinished"))
                     msg.what = RiderHomeActivity.GET_ORDER_FAIL_BY_UNFINISHED;
                 else
                     msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 msg.obj = "changeState";
-                Log.i("cezz", "responseStr:" + responseStr + "msg.what:" + msg.what);
                 RiderHomeActivity.handler.sendMessage(msg);
             }
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                msg.what = OkHttpUtil.REQUEST_FAIL_NET;
+                RiderHomeActivity.handler.sendMessage(msg);
+            }
+
         });
     }
 

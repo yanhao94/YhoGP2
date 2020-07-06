@@ -3,6 +3,7 @@ package cn.android.yhogp2.activity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rb_loginShop = findViewById(R.id.rb_loginShop);
         findViewById(R.id.btn_loginDialog_login).setOnClickListener(this);
         findViewById(R.id.btn_loginDialog_register).setOnClickListener(this);
-        LoginUtil.initLoginUtil(this);
         initLoginHandler();
     }
 
@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     String account = tiet_loginDialog_account.getText().toString();
                     String password = tiet_loginDialog_password.getText().toString();
                     OkHttpUtil.CLIENT_TYPE = rb_loginShop.isChecked() ? "1" : "2";
+                    LoginUtil.initLoginUtil(this);
                     LoginUtil.loginWithOkHttp(account, password, handler, false);
                 }
                 break;
@@ -114,17 +115,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences.Editor editor = sp_user.edit();
         editor.clear();
         editor.apply();
-//        Message msg = MainActivity.handler.obtainMessage();
-//        msg.what = MainApplication.LOGIN_OUT;
-//        msg.arg1 = 0;
-//        MainActivity.handler.sendMessage(msg);
         context.startActivity(new Intent(context, MainActivity.class));
     }
-    public static  void showLoginOutDialog(Context context) {
+    public static  void showLoginOutDialog(Context context, Activity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("要登出不");
         builder.setPositiveButton("是", (dialogInterface, i) -> {
             MainActivity.loginOut(context);
+            activity.finish();
         });
         builder.setNegativeButton("不", (dialogInterface, i) -> {
         });

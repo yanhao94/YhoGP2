@@ -21,7 +21,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.android.yhogp2.R;
-import cn.android.yhogp2.activity.shop.OrderPageRcvAdapter;
 import cn.android.yhogp2.application.MainApplication;
 import cn.android.yhogp2.javabean.Order;
 import cn.android.yhogp2.uitils.OkHttpUtil;
@@ -34,7 +33,6 @@ public class RiderHistoryActivity extends AppCompatActivity {
 
     @BindView(R.id.rcv_riderHistoryOrder)
     RecyclerView rcvRiderHistoryOrder;
-    private static final int ORDER_RIDER_CHANGE_ORDER_STATE = 4;
     public static Handler handler;
     public static List<Order> ordersList;
     public static HistoryOrderRcvAdapter adapter;
@@ -92,7 +90,7 @@ public class RiderHistoryActivity extends AppCompatActivity {
                             rcvRiderHistoryOrder.setAdapter(adapter);
 
                         } else {
-                            TextUtilTools.myToast(getApplicationContext(), "宁当前暂时没有订单", 1);
+                            TextUtilTools.myToast(getApplicationContext(), "您当前暂时没有订单", 1);
                         }
                         break;
                     case OkHttpUtil.REQUEST_FAIL_NET:

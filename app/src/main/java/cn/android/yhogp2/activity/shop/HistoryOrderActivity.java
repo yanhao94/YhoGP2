@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -90,7 +89,7 @@ public class HistoryOrderActivity extends AppCompatActivity {
                             rcvHistoryOrder.setAdapter(adapter);
 
                         } else {
-                            TextUtilTools.myToast(getApplicationContext(), "宁当前暂时没有订单", 1);
+                            TextUtilTools.myToast(getApplicationContext(), "您当前暂时没有订单", 1);
                         }
                         break;
                     case OkHttpUtil.REQUEST_FAIL_NET:

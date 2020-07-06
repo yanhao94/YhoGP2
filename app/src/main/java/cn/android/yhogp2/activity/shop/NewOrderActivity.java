@@ -81,7 +81,7 @@ public class NewOrderActivity extends AppCompatActivity {
                                 //adapter.notifyDataSetChanged();
                             }
                         } else {
-                            TextUtilTools.myToast(getApplicationContext(), "宁当前暂时没有订单", 1);
+                            TextUtilTools.myToast(getApplicationContext(), "您当前暂时没有订单", 1);
                         }
                         break;
                     case OkHttpUtil.REQUEST_FAIL_NET:
@@ -156,7 +156,6 @@ public class NewOrderActivity extends AppCompatActivity {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 msg.obj = "changeState";
-                // NewOrderActivity.handler.sendMessage(msg);
             }
 
             @Override
@@ -168,7 +167,6 @@ public class NewOrderActivity extends AppCompatActivity {
                     msg.what = OkHttpUtil.REQUEST_FAIL_NET;
                 }
                 msg.obj = "changeState";
-                //NewOrderActivity.handler.sendMessage(msg);
             }
         });
     }

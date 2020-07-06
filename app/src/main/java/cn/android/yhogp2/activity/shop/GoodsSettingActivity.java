@@ -1,6 +1,5 @@
 package cn.android.yhogp2.activity.shop;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,14 +8,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.List;
@@ -199,8 +196,10 @@ public class GoodsSettingActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.body().string().equals("true"))
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
-                else
+                else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                    msg.obj="请求失败，请稍后重试";
+                }
                 handler.sendMessage(msg);
             }
         });
@@ -220,8 +219,10 @@ public class GoodsSettingActivity extends AppCompatActivity {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.body().string().equals("true"))
                     msg.what = OkHttpUtil.REQUEST_SUCCESS;
-                else
+                else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                    msg.obj="请求失败，请稍后重试";
+                }
                 handler.sendMessage(msg);
             }
         });

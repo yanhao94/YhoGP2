@@ -1,5 +1,6 @@
 package cn.android.yhogp2.activity.shop;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -93,6 +94,7 @@ public class ShopHomeActivity extends AppCompatActivity {
         this.startService(new Intent(this, RequestNewService.class));
     }
 
+    @SuppressLint("HandlerLeak")
     private void initOrderHandler() {
         orderHandler = new Handler() {
             @Override
@@ -100,11 +102,13 @@ public class ShopHomeActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case -1:
-                        TextUtilTools.myToast(getApplicationContext(), "网络异常获取不到新订单", 1);
+                        TextUtilTools.myToast(getApplicationContext(), "网络异常获取不到新" +
+                                "订单", 1);
                         break;
                     case 1:
                         List<Order> ordersList = (List<Order>) msg.obj;
-                        TextUtilTools.myToast(getApplicationContext(), "接到" + ordersList.size() + "个新订单啦", 1);
+                        TextUtilTools.myToast(getApplicationContext(), "接到" +
+                                ordersList.size() + "个新订单啦", 1);
                         break;
                     case DELETE_GOODS_SUCCESS:
                         requestGoods();
@@ -153,7 +157,6 @@ public class ShopHomeActivity extends AppCompatActivity {
     private void upDataGoodsList(String json) {
         goodsList = TextUtilTools.fromToJson(json, new TypeToken<List<Goods>>() {
         }.getType());
-        //rcv adapter
     }
 
     private void requestGoods() {
@@ -201,7 +204,7 @@ public class ShopHomeActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_shopSetting:
-                MainActivity.showLoginOutDialog(this);
+                MainActivity.showLoginOutDialog(this,this);
                 break;
             case R.id.tv_shopGoodsSelectAll:
                 break;

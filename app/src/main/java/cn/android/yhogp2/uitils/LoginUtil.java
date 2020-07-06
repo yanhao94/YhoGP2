@@ -32,7 +32,8 @@ public class LoginUtil {
         context = mcontext;
     }
 
-    public static void loginWithOkHttp(final String account, final String password, final Handler handler,Boolean isAuto) {
+    public static void loginWithOkHttp(final String account, final String password,
+                                       final Handler handler,Boolean isAuto) {
         if (context != null&&!isAuto)
             launchDialog = new LaunchDialog(context);
         OkHttpUtil.loginWithOkHttp(account, password, new okhttp3.Callback() {
@@ -41,7 +42,6 @@ public class LoginUtil {
                 if (context != null&&!isAuto)
                     launchDialog.shutDown();
                 final String responseData = response.body().string();
-
                 Message msg = handler.obtainMessage();
                 if (!responseData.equals("false")&&responseData.charAt(0)!='<') {
                     msg.what = MainApplication.LOGIN_SUCCESS;
@@ -53,9 +53,9 @@ public class LoginUtil {
                         MainApplication.loginRider = new Gson().fromJson(responseData, Rider.class);
                     MainApplication.haveLogined = true;
                     handler.sendMessage(msg);
-
                 } else {
                     msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                    msg.obj="密码或账号不匹配，登录失败";
                     handler.sendMessage(msg);
                 }
                 MainApplication.TYPE = OkHttpUtil.CLIENT_TYPE;

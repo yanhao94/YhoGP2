@@ -101,8 +101,10 @@ public class EditShopActivity extends AppCompatActivity {
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     if (response.body().string().equals("true"))
                         msg.what = OkHttpUtil.REQUEST_SUCCESS;
-                    else
+                    else {
                         msg.what = OkHttpUtil.REQUEST_FAIL_SERVER;
+                        msg.obj="编辑失败稍后重试";
+                    }
                     handler.sendMessage(msg);
                 }
             });

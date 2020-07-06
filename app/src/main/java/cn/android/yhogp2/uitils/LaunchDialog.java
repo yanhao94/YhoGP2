@@ -50,6 +50,7 @@ public class LaunchDialog {
         edge = metrics.widthPixels / 2;
         final List<ImageView> ivDots = initProgressDots();
         lunchDialog.setCancelable(false);
+        if(context!=null)
         lunchDialog.show();
 
         //    metrics.heightPixels
